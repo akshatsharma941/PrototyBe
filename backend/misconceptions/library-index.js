@@ -3,14 +3,16 @@
 // Case studies reference misconceptions by ID.
 // Add new misconception files here to make them available.
 
-const namingCollision = require('./naming-collision');
-const scaleFailure    = require('./scale-failure');
-const staticStructure = require('./static-structure');
+const namingCollision      = require('./naming-collision');
+const scaleFailure         = require('./scale-failure');
+const staticStructure      = require('./static-structure');
+const positionBasedLookup  = require('./position-based-lookup');
 
 const library = {
-  "naming-collision": namingCollision,
-  "scale-failure":    scaleFailure,
-  "static-structure": staticStructure
+  "naming-collision":       namingCollision,
+  "scale-failure":          scaleFailure,
+  "static-structure":       staticStructure,
+  "position-based-lookup":  positionBasedLookup
 };
 
 function getMisconception(id) {

@@ -175,6 +175,177 @@ const seedData = [
   },
 
   // ══════════════════════════════════════════════════════
+  // CASE STUDY 2 — The Student Report Card
+  // Teaches: Dictionaries — grouping by key instead of by position
+  // Prerequisite: Cricket Scoreboard (Lists)
+  // ══════════════════════════════════════════════════════
+
+  {
+    id: "student-report-card",
+    title: "The Student Report Card",
+    subtitle: "When finding one student's marks takes too long",
+    description: "Priya is a class teacher with 45 students. Each student has 5 subject marks. She needs totals, averages, and failure lists. Her current system keeps everything but finding one student's results takes forever.",
+    author: "PyBe Content Team",
+    difficulty: "beginner",
+    estimatedMin: 25,
+    tags: ["dictionaries", "grouping", "lookup", "keys"],
+
+    // ─── Learning Objectives ────────────────────────────
+    objectives: [
+      { id: "obj-1", label: "Recognise when data needs to be looked up by name rather than position" },
+      { id: "obj-2", label: "Explain why lists alone cannot solve the lookup problem at scale" },
+      { id: "obj-3", label: "Use a Dictionary to store and retrieve values by a named key" }
+    ],
+
+    // ─── Prerequisites ──────────────────────────────────
+    prerequisites: [
+      { caseStudyId: "cricket-scoreboard", reason: "Must understand grouping related values before learning name-based grouping" }
+    ],
+
+    // ─── The Story ──────────────────────────────────────
+    story: {
+      setting:     "A secondary school in Pune",
+      protagonist: "Priya, a Class 9 class teacher",
+      situation:   "Track 5 subject marks for 45 students and generate report cards",
+      tension:     "225 individual mark entries — a parent calls asking for their child's total and Priya has to search through the entire notebook",
+      emotion:     "Anxious that a simple lookup takes 10 minutes of page-flipping"
+    },
+
+    // ─── Phase 1: Observation ───────────────────────────
+    observation: {
+      prompt:       "What do you notice about what Priya is managing?",
+      whatToNotice: [
+        "Student names and their 5 subject marks",
+        "Each student has multiple pieces of data attached to their name",
+        "She needs to look up students by name frequently"
+      ],
+      notYetReady: [
+        "Only mentions grading or exams, not data management",
+        "Talks about teaching, not about organising marks"
+      ]
+    },
+
+    // ─── Phase 2: First Attempt ─────────────────────────
+    firstAttempt: {
+      prompt:    "Priya writes the marks like this: student1_marks = [72, 85, 61, 90, 74]. She creates a new label for each student. How would you organise all 45 students' marks?",
+      modelGood: "Creates one list per student: student1_marks, student2_marks, etc. — grouped by position, labelled by number",
+      modelWeak: "Suggests one big table in a notebook or Excel — rows for students, columns for subjects",
+      reveals:   "The learner's instinct is still position-based. student1, student2 — the name is still an index, not a lookup key."
+    },
+
+    // ─── Phase 3: Guided Questions ──────────────────────
+    guidedQuestions: [
+      {
+        question: "A parent calls and asks: 'What is Ayaan's total out of 500?' Ayaan is student23. How does Priya find student23's marks?",
+        targetsMisconception: "position-based-lookup",
+        topic: "lookup difficulty",
+        order: 1,
+        ifStuck: "Show me which line in the notebook has Ayaan's marks. What label is written on that line?"
+      },
+      {
+        question: "There are 45 students and 5 subjects. How many individual mark entries does Priya have in total?",
+        targetsMisconception: "scale-failure",
+        topic: "scale awareness",
+        order: 2,
+        ifStuck: "45 students, 5 subjects each. What is 45 multiplied by 5?"
+      },
+      {
+        question: "A new student, Farah, joins the class. Where does her entry go? Does it change the numbers of all students after her?",
+        targetsMisconception: "static-structure",
+        topic: "rigidity of numbered labels",
+        order: 3,
+        ifStuck: "If Farah is inserted between student12 and student13, what happens to student13's label? And student14? And all the ones after?"
+      },
+      {
+        question: "Priya's class is divided into two divisions — Division A and Division B. Each division has students with the same roll numbers: both divisions have 'student1', 'student2'. How does Priya tell them apart?",
+        targetsMisconception: "position-based-lookup",
+        topic: "collision of identifiers",
+        order: 4,
+        ifStuck: "If both divisions have student1, what happens when Priya looks for 'student1'? Which division does she get?"
+      }
+    ],
+
+    // ─── Phase 4: Cognitive Trigger ─────────────────────
+    cognitiveTrigger: {
+      statement:        "45 students × 5 subjects = 225 individual mark entries. A parent calls for their child's result. Priya has 225 entries to search through.",
+      presentationNote: "Pause after saying the number. Let the learner feel the weight of searching 225 entries by roll number.",
+      pauseRequired:    true,
+      learnerReady:     "Frustration or recognition that finding one student's marks in 225 entries is slow and error-prone",
+      learnerNotYet:    "They say 'just keep a register' or 'just number them faster'"
+    },
+
+    // ─── Phase 5: Discovery ─────────────────────────────
+    discovery: {
+      bridgeQuestion: "Instead of numbering students — student1, student2, student3 — what if Priya just used their actual names as the label? student_Ayaan, student_Farah, student_Zara. Would that help?",
+      hint:            "If Priya searches for 'Ayaan' directly — not 'student23' — does she need to know what number Ayaan is?"
+    },
+
+    // ─── Phase 6: Programming Mapping ───────────────────
+    programmingMapping: {
+      introduction: "What you've described — using a student's actual name as the label — is how a Dictionary works in Python. It's a collection of labelled values.",
+      pythonCode:   "marks = {\n    'Ayaan': [72, 85, 61, 90, 74],\n    'Farah': [88, 91, 74, 65, 82],\n    'Zara':  [55, 60, 71, 48, 59]\n}",
+      symbols: [
+        { symbol: "marks",       meaning: "One name for the entire collection of labelled data" },
+        { symbol: "{",           meaning: "The dictionary begins here" },
+        { symbol: "'Ayaan':",    meaning: "Ayaan is the key — the label that identifies this entry" },
+        { symbol: "[72, 85...]", meaning: "Ayaan's 5 subject marks — the value associated with the key 'Ayaan'" },
+        { symbol: ",",          meaning: "Separates each key-value pair" },
+        { symbol: "}",           meaning: "The dictionary ends here" }
+      ],
+      miniTask:     "Store the prices of three fruits in a dictionary called fruit_prices. Use the fruit name as the key. Example: apples = 30"
+    },
+
+    // ─── Phase 7: Practice ──────────────────────────────
+    practice: [
+      {
+        task:       "Store the marks for three students in a dictionary called student_marks. Use names as keys, lists of 3 marks as values.",
+        starterCode: "# Your code here\nstudent_marks = ",
+        hint:       "Start with: student_marks = { 'Rahul': [80, 75, 90], ... }"
+      }
+    ],
+
+    // ─── Phase 8: Reflection ────────────────────────────
+    reflection: {
+      questions: [
+        "In the List system, how did Priya find a student's marks?",
+        "In the Dictionary system, how does Priya find a student's marks?",
+        "What is the difference between 'looking up by position' and 'looking up by name'?",
+        "When would you choose a Dictionary over a List?"
+      ],
+      confidenceSurvey: [
+        {
+          conceptId:    "obj-1",
+          conceptLabel: "Name-based lookup",
+          prompt:       "How confident do you feel about knowing when to use a name-based lookup?"
+        },
+        {
+          conceptId:    "obj-2",
+          conceptLabel: "Dictionary vs List",
+          prompt:       "How confident do you feel about explaining why a List is not enough for lookups?"
+        },
+        {
+          conceptId:    "obj-3",
+          conceptLabel: "Python Dictionary",
+          prompt:       "How confident do you feel about writing your first Python Dictionary?"
+        }
+      ],
+      optional: false
+    },
+
+    // ─── Extension ──────────────────────────────────────
+    extension: {
+      title:       "The Library Catalogue",
+      description: "A school librarian tracks 500 books. Each book has a title, author, year published, and genre. Design how you'd organise this data so that searching for a book by title is instant.",
+      format:      "Describe your approach in full sentences. No Python required yet.",
+      sparks: [
+        "How would you look up a specific book — by title or by position?",
+        "How many different ways might someone want to search the catalogue?",
+        "Would a Dictionary help here? Why?"
+      ]
+    }
+  },
+
+  // ══════════════════════════════════════════════════════
   // EXISTING CASE STUDIES — unchanged
   // Uses old schema (pre-v1.1). tutorController handles gracefully.
   // ══════════════════════════════════════════════════════
