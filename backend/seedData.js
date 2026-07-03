@@ -1,5 +1,19 @@
 const seedData = [
   {
+    title: "The Cricket Scoreboard",
+    description: "Arjun plays cricket in a local league. Every Sunday after a match, he writes down the scores of all eleven players. With 11 players, the notebook works fine. But then the league expands to 80 players across multiple teams, and he needs to track 10 matches per season — 800 individual scores. He needs to find highest scorers, calculate averages, and compare teams. His notebook has all the data, but answering even simple questions takes hours.",
+    requiredConcepts: ["Variables", "Data Organisation", "Grouping Related Values"],
+    targetInsight: "Discover that storing related values under individual variable names breaks at scale — and that grouping them under one name solves the problem.",
+    followUpQuestions: [
+      "What other real-world situations have the same structure as Arjun's problem?",
+      "How would a teacher's markbook face the same challenge?",
+      "What if you needed to track scores across 10 seasons instead of one?"
+    ],
+    pythonTopics: ["variables", "lists", "data types"],
+    starterCode: "# Store all 11 players' scores\n# Then find the highest score\n# Then calculate the team average",
+    testCases: []
+  },
+  {
     title: "The Bakery Checkout",
     description: "You're building a checkout system for a bakery. A customer buys 3 croissants ($2.50 each) and 2 coffees ($3.00 each). Write a program to calculate the total cost.",
     requiredConcepts: ["Variables", "Basic Arithmetic"],
