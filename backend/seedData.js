@@ -175,16 +175,16 @@ const seedData = [
   },
 
   // ══════════════════════════════════════════════════════
-  // CASE STUDY 2 — The Student Report Card
+  // CASE STUDY 2 — The Tiffin Service Inventory
   // Teaches: Dictionaries — grouping by key instead of by position
   // Prerequisite: Cricket Scoreboard (Lists)
   // ══════════════════════════════════════════════════════
 
   {
-    id: "student-report-card",
-    title: "The Student Report Card",
-    subtitle: "When finding one student's marks takes too long",
-    description: "Priya is a class teacher with 45 students. Each student has 5 subject marks. She needs totals, averages, and failure lists. Her current system keeps everything but finding one student's results takes forever.",
+    id: "tiffin-service-inventory",
+    title: "The Tiffin Service Inventory",
+    subtitle: "When checking one ingredient takes 20 minutes",
+    description: "Meera runs a tiffin service from her kitchen in Bangalore. Every morning she cooks for 30 families. Her pantry notebook lists 30 ingredients with quantities. But finding whether she has enough turmeric — without scrolling through everything — takes too long.",
     author: "PyBe Content Team",
     difficulty: "beginner",
     estimatedMin: 25,
@@ -192,8 +192,8 @@ const seedData = [
 
     // ─── Learning Objectives ────────────────────────────
     objectives: [
-      { id: "obj-1", label: "Recognise when data needs to be looked up by name rather than position" },
-      { id: "obj-2", label: "Explain why lists alone cannot solve the lookup problem at scale" },
+      { id: "obj-1", label: "Recognise when data needs to be looked up by a name you already know" },
+      { id: "obj-2", label: "Explain why position-based storage fails when you know the name but not the position" },
       { id: "obj-3", label: "Use a Dictionary to store and retrieve values by a named key" }
     ],
 
@@ -204,124 +204,117 @@ const seedData = [
 
     // ─── The Story ──────────────────────────────────────
     story: {
-      setting:     "A secondary school in Pune",
-      protagonist: "Priya, a Class 9 class teacher",
-      situation:   "Track 5 subject marks for 45 students and generate report cards",
-      tension:     "225 individual mark entries — a parent calls asking for their child's total and Priya has to search through the entire notebook",
-      emotion:     "Anxious that a simple lookup takes 10 minutes of page-flipping"
+      setting:     "A home kitchen in Bangalore",
+      protagonist: "Meera, who runs a tiffin service cooking for 30 families",
+      situation:   "Track 30 pantry ingredients — names, quantities, and daily usage",
+      tension:     "Every morning, Meera's phone rings with ingredient queries. 'Do you have enough turmeric?' She opens her notebook and starts flipping pages.",
+      emotion:     "Exhausted from the daily page-flipping, even though the data is right there"
     },
 
     // ─── Phase 1: Observation ───────────────────────────
     observation: {
-      prompt:       "What do you notice about what Priya is managing?",
+      prompt:       "What do you notice about what Meera is managing?",
       whatToNotice: [
-        "Student names and their 5 subject marks",
-        "Each student has multiple pieces of data attached to their name",
-        "She needs to look up students by name frequently"
+        "30 ingredients, each with a name and a quantity",
+        "The notebook is organised with numbered entries",
+        "Meera gets asked about specific ingredients — by name — many times a day"
       ],
       notYetReady: [
-        "Only mentions grading or exams, not data management",
-        "Talks about teaching, not about organising marks"
+        "Only talks about cooking or food, not about information retrieval",
+        "Mentions the physical kitchen setup"
       ]
     },
 
     // ─── Phase 2: First Attempt ─────────────────────────
     firstAttempt: {
-      prompt:    "Priya writes the marks like this: student1_marks = [72, 85, 61, 90, 74]. She creates a new label for each student. Priya has 45 students. Show me — what does this system look like for the first few students? Write it out in your own words.",
-      modelGood: "Describes the pattern: student1 has one label, student2 has another, each pointing to a list of 5 marks",
-      modelWeak: "Suggests using Excel or a table — which is a valid start but sidesteps the design question",
-      reveals:   "The learner's instinct is position-based. student1, student2 — each label is a slot number, not a name."
+      prompt:    "Meera's notebook looks like this:\n\nitem1 = 'turmeric powder', qty1 = '200g'\nitem2 = 'red chilli powder', qty2 = '500g'\nitem3 = 'coriander powder', qty3 = '300g'\n\nShe has 30 ingredients like this. Show me — in your own words — what pattern do you see? What happens when Meera wants to find a specific ingredient?",
+      modelGood: "Describes the pattern: numbered slots, each holding an ingredient name and quantity",
+      modelWeak: "Suggests using an app or Excel — sidesteps the design problem",
+      reveals:   "The learner sees the numbered-entry pattern but hasn't yet felt the lookup problem."
     },
 
     // ─── Phase 3: Guided Questions ──────────────────────
     guidedQuestions: [
       {
-        question: "A parent calls and asks: 'What is Ayaan's total?' Priya looks at student23_marks. What must Priya know FIRST before she can look up student23_marks?",
+        question: "A customer calls at 7 AM and asks: 'Do you have enough red chilli powder for today's orders?' Meera opens her notebook. She sees item1, item2, item3... up to item30. How does she find which item number is 'red chilli powder'?",
         targetsMisconception: "position-based-lookup",
-        topic: "lookup difficulty",
+        topic: "the lookup step that shouldn't exist",
         order: 1,
-        ifStuck: "Priya opens the marks notebook and looks for student23_marks. But to find student23_marks, she first has to find which student number is Ayaan. Where does that information live?"
+        ifStuck: "The notebook has item1 through item30. To find red chilli powder, Meera reads item1, then item2, then item3... until she finds the right one. How many entries might she read before finding it?"
       },
       {
-        question: "There are 45 students and 5 subjects. How many individual mark entries does Priya have in total?",
-        targetsMisconception: "scale-failure",
-        topic: "scale awareness",
-        order: 2,
-        ifStuck: "45 students, 5 subjects each. What is 45 multiplied by 5?"
-      },
-      {
-        question: "A new student, Farah, joins the class. Where does her entry go?",
+        question: "Meera has 30 ingredients in her notebook. A new ingredient — 'garam masala' — arrives. Where does it go in the notebook?",
         targetsMisconception: "static-structure",
-        topic: "rigidity of numbered labels",
-        order: 3,
-        ifStuck: "Does she go at the end of the list? What label does she get?"
+        topic: "where new entries land",
+        order: 2,
+        ifStuck: "Does 'garam masala' go at the end as item31? Does anything else change in the notebook?"
       },
       {
-        question: "If Priya uses the name directly in the marks section — Ayaan_marks instead of student23_marks — does she still need the name-to-number list?",
+        question: "If Meera writes 'red_chilli_powder' directly in the notebook instead of 'item2' — and writes the quantity right next to it — does she still need to search through item1, item2, item3 to find it?",
         targetsMisconception: "position-based-lookup",
-        topic: "eliminating the lookup step",
-        order: 4,
-        ifStuck: "If Ayaan_marks exists directly, what does Priya type to find Ayaan's marks? Does she need to know Ayaan's number at all?"
+        topic: "can the search be bypassed entirely",
+        order: 3,
+        ifStuck: "If the notebook had 'red_chilli_powder: 500g' written directly — not as item2 — what would Meera do when a customer asks about red chilli powder?"
       }
     ],
 
     // ─── Phase 4: Cognitive Trigger ─────────────────────
     cognitiveTrigger: {
-      statement:        "45 students × 5 subjects = 225 individual mark entries. A parent calls for their child's result. Priya has 225 entries to search through.",
-      presentationNote: "Pause after saying the number. Let the learner feel the weight of searching 225 entries by roll number.",
+      statement:        "30 ingredients. Every morning, Meera answers 15 to 20 calls asking about specific ingredients. Each call takes up to 2 minutes of searching. That's up to 40 minutes of page-flipping before she even starts cooking.",
+      presentationNote: "Let the number sink in. 40 minutes. Not because the data is missing — but because the data doesn't know what to call itself.",
       pauseRequired:    true,
-      learnerReady:     "Frustration or recognition that finding one student's marks in 225 entries is slow and error-prone",
-      learnerNotYet:    "They say 'just keep a register' or 'just number them faster'"
+      learnerReady:     "Recognises the frustration — 40 minutes of searching before cooking begins, just because the notebook entries don't carry their own name",
+      learnerNotYet:    "Suggests 'use an app' or 'keep it more organised' — treating the symptom, not the structure"
     },
 
     // ─── Phase 5: Discovery ─────────────────────────────
     discovery: {
-      bridgeQuestion: "Instead of numbering students — student1, student2, student3 — what if Priya just used their actual names as the label? student_Ayaan, student_Farah, student_Zara. Would that help?",
-      hint:            "If Priya searches for 'Ayaan' directly — not 'student23' — does she need to know what number Ayaan is?"
+      bridgeQuestion: "What if every ingredient in the notebook already had its own name written on it — and Meera just had to read the name to find it? What if item2 didn't exist — and instead the notebook just said:\n\n'turmeric powder: 200g\nred chilli powder: 500g\ncoriander powder: 300g'?",
+      hint:            "When Meera opens the notebook and sees the word 'turmeric powder' written directly on the page — does she need to know what number it is? Or does she just read it?"
     },
 
     // ─── Phase 6: Programming Mapping ───────────────────
     programmingMapping: {
-      introduction: "What you've described — using a student's actual name as the label — is how a Dictionary works in Python. It's a collection of labelled values.",
-      pythonCode:   "marks = {\n    'Ayaan': [72, 85, 61, 90, 74],\n    'Farah': [88, 91, 74, 65, 82],\n    'Zara':  [55, 60, 71, 48, 59]\n}",
+      introduction: "What you just described is how a Dictionary works in Python. Each entry has a name — a key — that the notebook carries with it. You don't search by number. You search by name.",
+      pythonCode:   "stock = {\n    'turmeric powder':    '200g',\n    'red chilli powder':  '500g',\n    'coriander powder':   '300g',\n    'garam masala':       '400g'\n}",
       symbols: [
-        { symbol: "marks",       meaning: "One name for the entire collection of labelled data" },
-        { symbol: "{",           meaning: "The dictionary begins here" },
-        { symbol: "'Ayaan':",    meaning: "Ayaan is the key — the label that identifies this entry" },
-        { symbol: "[72, 85...]", meaning: "Ayaan's 5 subject marks — the value associated with the key 'Ayaan'" },
-        { symbol: ",",          meaning: "Separates each key-value pair" },
-        { symbol: "}",           meaning: "The dictionary ends here" }
+        { symbol: "stock",                meaning: "One name for the entire pantry collection" },
+        { symbol: "{",                    meaning: "The dictionary begins here" },
+        { symbol: "'turmeric powder':",   meaning: "'turmeric powder' is the key — the name Meera already knows" },
+        { symbol: "'200g'",               meaning: "The quantity — the value stored under that key" },
+        { symbol: ",",                   meaning: "Separates each key-value pair" },
+        { symbol: "}",                    meaning: "The dictionary ends here" }
       ],
-      miniTask:     "Store the prices of three fruits in a dictionary called fruit_prices. Use the fruit name as the key. Example: apples = 30"
+      miniTask:     "Store the stock levels of three fruits in a dictionary called fruit_stock. Use the fruit name as the key and the quantity as the value. Example: apples = '2kg'"
     },
 
     // ─── Phase 7: Practice ──────────────────────────────
     practice: [
       {
-        task:       "Store the marks for three students in a dictionary called student_marks. Use names as keys, lists of 3 marks as values.",
-        starterCode: "# Your code here\nstudent_marks = ",
-        hint:       "Start with: student_marks = { 'Rahul': [80, 75, 90], ... }"
+        task:       "Store the prices of three books in a dictionary called book_prices. Use the book title as the key and the price as the value.",
+        starterCode: "# Your code here\nbook_prices = ",
+        hint:       "Start with: book_prices = { 'Wings of Fire': 299, ... }"
       }
     ],
 
     // ─── Phase 8: Reflection ────────────────────────────
     reflection: {
       questions: [
-        "In the List system, how did Priya find a student's marks?",
-        "In the Dictionary system, how does Priya find a student's marks?",
-        "What is the difference between 'looking up by position' and 'looking up by name'?",
-        "When would you choose a Dictionary over a List?"
+        "In Meera's old notebook system — item1, item2, item3 — what did she have to know before she could find red chilli powder?",
+        "In the new system — 'red chilli powder': '500g' — what does Meera need to know before she can find red chilli powder?",
+        "What is the difference between searching by position and searching by name?",
+        "In your own life, is there something you look up by name — not by number — that would benefit from this structure?"
       ],
       confidenceSurvey: [
         {
           conceptId:    "obj-1",
-          conceptLabel: "Name-based lookup",
-          prompt:       "How confident do you feel about knowing when to use a name-based lookup?"
+          conceptLabel: "When to use a named key",
+          prompt:       "How confident do you feel about knowing when to look up data by name rather than position?"
         },
         {
           conceptId:    "obj-2",
-          conceptLabel: "Dictionary vs List",
-          prompt:       "How confident do you feel about explaining why a List is not enough for lookups?"
+          conceptLabel: "Why positions aren't enough",
+          prompt:       "How confident do you feel about explaining why position-based storage breaks down?"
         },
         {
           conceptId:    "obj-3",
@@ -334,13 +327,13 @@ const seedData = [
 
     // ─── Extension ──────────────────────────────────────
     extension: {
-      title:       "The Library Catalogue",
-      description: "A school librarian tracks 500 books. Each book has a title, author, year published, and genre. Design how you'd organise this data so that searching for a book by title is instant.",
+      title:       "The Neighbourhood Hardware Store",
+      description: "Farooq runs a small hardware store. He has 200 products — each with a name, category, stock count, and price. A customer walks in and asks: 'Do you have a 10mm drill bit?' Farooq needs to check stock in seconds. Design how he'd organise this.",
       format:      "Describe your approach in full sentences. No Python required yet.",
       sparks: [
-        "How would you look up a specific book — by title or by position?",
-        "How many different ways might someone want to search the catalogue?",
-        "Would a Dictionary help here? Why?"
+        "What does Farooq know when the customer walks in? A name or a number?",
+        "How many different things might a customer search by — name, category, size, brand?",
+        "Would a Dictionary be enough here, or would it need something more?"
       ]
     }
   },
