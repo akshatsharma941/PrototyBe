@@ -227,20 +227,20 @@ const seedData = [
 
     // ─── Phase 2: First Attempt ─────────────────────────
     firstAttempt: {
-      prompt:    "Priya writes the marks like this: student1_marks = [72, 85, 61, 90, 74]. She creates a new label for each student. How would you organise all 45 students' marks?",
-      modelGood: "Creates one list per student: student1_marks, student2_marks, etc. — grouped by position, labelled by number",
-      modelWeak: "Suggests one big table in a notebook or Excel — rows for students, columns for subjects",
-      reveals:   "The learner's instinct is still position-based. student1, student2 — the name is still an index, not a lookup key."
+      prompt:    "Priya writes the marks like this: student1_marks = [72, 85, 61, 90, 74]. She creates a new label for each student. Priya has 45 students. Show me — what does this system look like for the first few students? Write it out in your own words.",
+      modelGood: "Describes the pattern: student1 has one label, student2 has another, each pointing to a list of 5 marks",
+      modelWeak: "Suggests using Excel or a table — which is a valid start but sidesteps the design question",
+      reveals:   "The learner's instinct is position-based. student1, student2 — each label is a slot number, not a name."
     },
 
     // ─── Phase 3: Guided Questions ──────────────────────
     guidedQuestions: [
       {
-        question: "A parent calls and asks: 'What is Ayaan's total out of 500?' Ayaan is student23. How does Priya find student23's marks?",
+        question: "A parent calls and asks: 'What is Ayaan's total?' Priya looks at student23_marks. What must Priya know FIRST before she can look up student23_marks?",
         targetsMisconception: "position-based-lookup",
         topic: "lookup difficulty",
         order: 1,
-        ifStuck: "Show me which line in the notebook has Ayaan's marks. What label is written on that line?"
+        ifStuck: "Priya opens the marks notebook and looks for student23_marks. But to find student23_marks, she first has to find which student number is Ayaan. Where does that information live?"
       },
       {
         question: "There are 45 students and 5 subjects. How many individual mark entries does Priya have in total?",
@@ -250,18 +250,18 @@ const seedData = [
         ifStuck: "45 students, 5 subjects each. What is 45 multiplied by 5?"
       },
       {
-        question: "A new student, Farah, joins the class. Where does her entry go? Does it change the numbers of all students after her?",
+        question: "A new student, Farah, joins the class. Where does her entry go?",
         targetsMisconception: "static-structure",
         topic: "rigidity of numbered labels",
         order: 3,
-        ifStuck: "If Farah is inserted between student12 and student13, what happens to student13's label? And student14? And all the ones after?"
+        ifStuck: "Does she go at the end of the list? What label does she get?"
       },
       {
-        question: "Priya's class is divided into two divisions — Division A and Division B. Each division has students with the same roll numbers: both divisions have 'student1', 'student2'. How does Priya tell them apart?",
+        question: "If Priya uses the name directly in the marks section — Ayaan_marks instead of student23_marks — does she still need the name-to-number list?",
         targetsMisconception: "position-based-lookup",
-        topic: "collision of identifiers",
+        topic: "eliminating the lookup step",
         order: 4,
-        ifStuck: "If both divisions have student1, what happens when Priya looks for 'student1'? Which division does she get?"
+        ifStuck: "If Ayaan_marks exists directly, what does Priya type to find Ayaan's marks? Does she need to know Ayaan's number at all?"
       }
     ],
 
