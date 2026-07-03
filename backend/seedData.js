@@ -175,16 +175,16 @@ const seedData = [
   },
 
   // ══════════════════════════════════════════════════════
-  // CASE STUDY 2 — The Tiffin Service Inventory
+  // CASE STUDY 2 — The Tiffin Service Orders
   // Teaches: Dictionaries — grouping by key instead of by position
   // Prerequisite: Cricket Scoreboard (Lists)
   // ══════════════════════════════════════════════════════
 
   {
-    id: "tiffin-service-inventory",
-    title: "The Tiffin Service Inventory",
-    subtitle: "When checking one ingredient takes 20 minutes",
-    description: "Meera runs a tiffin service from her kitchen in Bangalore. Every morning she cooks for 30 families. Her pantry notebook lists 30 ingredients with quantities. But finding whether she has enough turmeric — without scrolling through everything — takes too long.",
+    id: "tiffin-service-orders",
+    title: "The Tiffin Service Orders",
+    subtitle: "When finding one customer's order takes too long",
+    description: "Meera runs a tiffin service from her home in Bangalore. Every day she prepares 30 lunch tiffins for 30 different customers. Each tiffin goes to a specific address in a specific city — Mumbai, Delhi, Pune, Kochi, and more. When a customer calls to modify their order, Meera has to find their entry in the notebook. But she doesn't know which page number Mumbai is on.",
     author: "PyBe Content Team",
     difficulty: "beginner",
     estimatedMin: 25,
@@ -205,87 +205,87 @@ const seedData = [
     // ─── The Story ──────────────────────────────────────
     story: {
       setting:     "A home kitchen in Bangalore",
-      protagonist: "Meera, who runs a tiffin service cooking for 30 families",
-      situation:   "Track 30 pantry ingredients — names, quantities, and daily usage",
-      tension:     "Every morning, Meera's phone rings with ingredient queries. 'Do you have enough turmeric?' She opens her notebook and starts flipping pages.",
-      emotion:     "Exhausted from the daily page-flipping, even though the data is right there"
+      protagonist: "Meera, who runs a tiffin service cooking 30 tiffins daily",
+      situation:   "Track 30 daily tiffin orders — city destination, delivery address, tiffin count, and time",
+      tension:     "Every afternoon a regular calls to modify their order. Meera opens her notebook and starts flipping. She knows the city — Mumbai, Delhi, Pune — but doesn't know which page number it is.",
+      emotion:     "Exhausted from page-flipping through 30 entries just to find one customer's city"
     },
 
     // ─── Phase 1: Observation ───────────────────────────
     observation: {
       prompt:       "What do you notice about what Meera is managing?",
       whatToNotice: [
-        "30 ingredients, each with a name and a quantity",
-        "The notebook is organised with numbered entries",
-        "Meera gets asked about specific ingredients — by name — many times a day"
+        "30 orders, each going to a different city",
+        "Each order has: city name, delivery address, tiffin count, and time",
+        "Meera gets called by customers who say their city name — 'I'm in Mumbai', 'I'm in Delhi'"
       ],
       notYetReady: [
-        "Only talks about cooking or food, not about information retrieval",
-        "Mentions the physical kitchen setup"
+        "Only talks about cooking or food",
+        "Mentions the physical kitchen or food quality"
       ]
     },
 
     // ─── Phase 2: First Attempt ─────────────────────────
     firstAttempt: {
-      prompt:    "Meera's notebook looks like this:\n\nitem1 = 'turmeric powder', qty1 = '200g'\nitem2 = 'red chilli powder', qty2 = '500g'\nitem3 = 'coriander powder', qty3 = '300g'\n\nShe has 30 ingredients like this. Show me — in your own words — what pattern do you see? What happens when Meera wants to find a specific ingredient?",
-      modelGood: "Describes the pattern: numbered slots, each holding an ingredient name and quantity",
-      modelWeak: "Suggests using an app or Excel — sidesteps the design problem",
-      reveals:   "The learner sees the numbered-entry pattern but hasn't yet felt the lookup problem."
+      prompt:    "Meera's notebook looks like this:\n\norder1 = 'Mumbai',   addr1 = '12 MG Road, Mumbai',    count1 = 3, time1 = '12:30 PM'\norder2 = 'Delhi',    addr2 = '45 CP, New Delhi',      count2 = 5, time2 = '1:00 PM'\norder3 = 'Kochi',    addr3 = '7 Marine Drive, Kochi', count3 = 2, time3 = '1:30 PM'\n\n...up to order30. Show me — in your own words — what pattern do you see? What happens when a customer calls and says 'I'm in Mumbai'? How does Meera find Mumbai in the notebook?",
+      modelGood: "Describes the pattern: numbered orders, each holding a city name and delivery details",
+      modelWeak: "Suggests using an app or Excel",
+      reveals:   "The learner sees the numbered-entry pattern. The lookup problem is hiding in plain sight."
     },
 
     // ─── Phase 3: Guided Questions ──────────────────────
     guidedQuestions: [
       {
-        question: "A customer calls at 7 AM and asks: 'Do you have enough red chilli powder for today's orders?' Meera opens her notebook. She sees item1, item2, item3... up to item30. How does she find which item number is 'red chilli powder'?",
+        question: "A customer calls and says: 'I'm in Mumbai, can you add 2 more tiffins for today?' Meera opens her notebook. She sees order1, order2, order3... up to order30. How does she find which order number is Mumbai?",
         targetsMisconception: "position-based-lookup",
         topic: "the lookup step that shouldn't exist",
         order: 1,
-        ifStuck: "The notebook has item1 through item30. To find red chilli powder, Meera reads item1, then item2, then item3... until she finds the right one. How many entries might she read before finding it?"
+        ifStuck: "The notebook has order1 through order30. To find Mumbai, Meera reads order1, then order2, then order3... until she finds the city name. How many entries might she read before finding it?"
       },
       {
-        question: "Meera has 30 ingredients in her notebook. A new ingredient — 'garam masala' — arrives. Where does it go in the notebook?",
+        question: "Meera has 30 orders. A new customer — Priya in Chennai — calls for the first time. Where does her entry go? Does anything else in the notebook change?",
         targetsMisconception: "static-structure",
         topic: "where new entries land",
         order: 2,
-        ifStuck: "Does 'garam masala' go at the end as item31? Does anything else change in the notebook?"
+        ifStuck: "Does Priya go at the end as order31? Does anything before it change?"
       },
       {
-        question: "If Meera writes 'red_chilli_powder' directly in the notebook instead of 'item2' — and writes the quantity right next to it — does she still need to search through item1, item2, item3 to find it?",
+        question: "If Meera wrote the city name directly in the notebook — 'Mumbai' instead of order1, 'Delhi' instead of order2 — does she still need to search through order1, order2, order3 to find a city?",
         targetsMisconception: "position-based-lookup",
         topic: "can the search be bypassed entirely",
         order: 3,
-        ifStuck: "If the notebook had 'red_chilli_powder: 500g' written directly — not as item2 — what would Meera do when a customer asks about red chilli powder?"
+        ifStuck: "If the notebook said 'Mumbai: 12 MG Road, 3 tiffins, 12:30 PM' directly — not as order1 — what does Meera do when a Mumbai customer calls?"
       }
     ],
 
     // ─── Phase 4: Cognitive Trigger ─────────────────────
     cognitiveTrigger: {
-      statement:        "30 ingredients. Every morning, Meera answers 15 to 20 calls asking about specific ingredients. Each call takes up to 2 minutes of searching. That's up to 40 minutes of page-flipping before she even starts cooking.",
-      presentationNote: "Let the number sink in. 40 minutes. Not because the data is missing — but because the data doesn't know what to call itself.",
+      statement:        "30 orders. Every afternoon, 10 to 15 regular customers call to check or modify their tiffins. Each call takes 2 to 3 minutes of page-flipping to find the right city. That's up to 45 minutes of searching every single day — just to find one customer's entry.",
+      presentationNote: "Let the number land. 45 minutes. Not because the data is missing — but because the notebook entries don't carry their own city name.",
       pauseRequired:    true,
-      learnerReady:     "Recognises the frustration — 40 minutes of searching before cooking begins, just because the notebook entries don't carry their own name",
+      learnerReady:     "Recognises the frustration — 45 minutes of searching every afternoon, just because order1 doesn't tell Meera what city it is",
       learnerNotYet:    "Suggests 'use an app' or 'keep it more organised' — treating the symptom, not the structure"
     },
 
     // ─── Phase 5: Discovery ─────────────────────────────
     discovery: {
-      bridgeQuestion: "What if every ingredient in the notebook already had its own name written on it — and Meera just had to read the name to find it? What if item2 didn't exist — and instead the notebook just said:\n\n'turmeric powder: 200g\nred chilli powder: 500g\ncoriander powder: 300g'?",
-      hint:            "When Meera opens the notebook and sees the word 'turmeric powder' written directly on the page — does she need to know what number it is? Or does she just read it?"
+      bridgeQuestion: "What if the notebook already had the city name written directly on it — and Meera just had to read the city name to find the entry? What if order1 didn't exist — and instead the notebook just said:\n\n'Mumbai: 12 MG Road, 3 tiffins, 12:30 PM'\n'Delhi: 45 CP, 5 tiffins, 1:00 PM'\n'Kochi: 7 Marine Drive, 2 tiffins, 1:30 PM'?",
+      hint:            "When Meera opens the notebook and sees the word 'Mumbai' written directly on the page — does she need to know what number Mumbai is? Or does she just read it?"
     },
 
     // ─── Phase 6: Programming Mapping ───────────────────
     programmingMapping: {
       introduction: "What you just described is how a Dictionary works in Python. Each entry has a name — a key — that the notebook carries with it. You don't search by number. You search by name.",
-      pythonCode:   "stock = {\n    'turmeric powder':    '200g',\n    'red chilli powder':  '500g',\n    'coriander powder':   '300g',\n    'garam masala':       '400g'\n}",
+      pythonCode:   "orders = {\n    'Mumbai': {'address': '12 MG Road',   'count': 3, 'time': '12:30 PM'},\n    'Delhi':  {'address': '45 CP',         'count': 5, 'time': '1:00 PM'},\n    'Kochi':  {'address': '7 Marine Drive', 'count': 2, 'time': '1:30 PM'}\n}",
       symbols: [
-        { symbol: "stock",                meaning: "One name for the entire pantry collection" },
-        { symbol: "{",                    meaning: "The dictionary begins here" },
-        { symbol: "'turmeric powder':",   meaning: "'turmeric powder' is the key — the name Meera already knows" },
-        { symbol: "'200g'",               meaning: "The quantity — the value stored under that key" },
-        { symbol: ",",                   meaning: "Separates each key-value pair" },
-        { symbol: "}",                    meaning: "The dictionary ends here" }
+        { symbol: "orders",                meaning: "One name for the entire orders collection" },
+        { symbol: "{",                     meaning: "The dictionary begins here" },
+        { symbol: "'Mumbai':",             meaning: "'Mumbai' is the key — the name Meera already knows from the phone call" },
+        { symbol: "{'address': ...}",      meaning: "All the order details for Mumbai — the value stored under the key 'Mumbai'" },
+        { symbol: ",",                    meaning: "Separates each key-value pair" },
+        { symbol: "}",                     meaning: "The dictionary ends here" }
       ],
-      miniTask:     "Store the stock levels of three fruits in a dictionary called fruit_stock. Use the fruit name as the key and the quantity as the value. Example: apples = '2kg'"
+      miniTask:     "Store the prices of three fruits in a dictionary called fruit_prices. Use the fruit name as the key and the price as the value. Example: apples = 30"
     },
 
     // ─── Phase 7: Practice ──────────────────────────────
@@ -300,8 +300,8 @@ const seedData = [
     // ─── Phase 8: Reflection ────────────────────────────
     reflection: {
       questions: [
-        "In Meera's old notebook system — item1, item2, item3 — what did she have to know before she could find red chilli powder?",
-        "In the new system — 'red chilli powder': '500g' — what does Meera need to know before she can find red chilli powder?",
+        "In Meera's old notebook — order1, order2, order3 — what did she have to know before she could find Mumbai?",
+        "In the new system — 'Mumbai': {'address': ...} — what does Meera need to know before she can find Mumbai?",
         "What is the difference between searching by position and searching by name?",
         "In your own life, is there something you look up by name — not by number — that would benefit from this structure?"
       ],
@@ -327,12 +327,12 @@ const seedData = [
 
     // ─── Extension ──────────────────────────────────────
     extension: {
-      title:       "The Neighbourhood Hardware Store",
-      description: "Farooq runs a small hardware store. He has 200 products — each with a name, category, stock count, and price. A customer walks in and asks: 'Do you have a 10mm drill bit?' Farooq needs to check stock in seconds. Design how he'd organise this.",
+      title:       "The Neighbourhood Salon",
+      description: "Aditi runs a small salon. She has 25 daily appointments — each with a client name, service type, time, and phone number. A client calls and says 'This is Priya, I have an appointment at 3 PM, can I reschedule?' Aditi needs to find Priya's appointment in seconds. Design how she'd organise this.",
       format:      "Describe your approach in full sentences. No Python required yet.",
       sparks: [
-        "What does Farooq know when the customer walks in? A name or a number?",
-        "How many different things might a customer search by — name, category, size, brand?",
+        "What does the client know when they call? A name or an appointment number?",
+        "How many different ways might Aditi want to look up an appointment — by name, by time, by service?",
         "Would a Dictionary be enough here, or would it need something more?"
       ]
     }
