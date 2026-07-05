@@ -1,6 +1,6 @@
 // backend/seedData.js
 //
-// Case Study Schema v1.1 — Cricket Scoreboard
+// Case Study Schema v1.1 - Cricket Scoreboard
 // Content creators: this file contains educational content only.
 // The tutor engine reads this and handles all phase transitions automatically.
 // Do not add engine configuration here.
@@ -8,13 +8,13 @@
 const seedData = [
   {
     // ══════════════════════════════════════════════════════
-    // CASE STUDY 1 — Cricket Scoreboard (v1.1 schema)
+    // CASE STUDY 1 - Cricket Scoreboard (v1.1 schema)
     // ══════════════════════════════════════════════════════
 
     id: "cricket-scoreboard",
     title: "The Cricket Scoreboard",
     subtitle: "When the scoreboard grows faster than the system",
-    description: "Arjun manages cricket scores for a local league. What starts as 11 players becomes 80 — and 800 score entries. The obvious approach stops working.",
+    description: "Arjun manages cricket scores for a local league. At first he records each player's score in its own labelled slot, which works fine for the first 11 players. But when the league expands to 80 players across 10 matches, he is suddenly staring at 800 individual score entries. When the obvious approach of giving every score its own name stops working, what should Arjun try instead?",
     author: "PyBe Content Team",
     difficulty: "beginner",
     estimatedMin: 25,
@@ -35,16 +35,22 @@ const seedData = [
       setting:     "A local cricket league in Mumbai",
       protagonist: "Arjun, the league's data entry clerk",
       situation:   "Track scores for 80 players across 10 matches per season",
-      tension:     "800 individual score entries — even simple questions take hours to answer",
+      tension:     "800 individual score entries - even simple questions take hours to answer",
       emotion:     "Frustrated that the obvious approach stops working"
     },
 
     // ─── Phase 1: Observation ───────────────────────────
     observation: {
       prompt: "What do you notice about what Arjun is managing?",
+      expectedKeywords: [
+        // Domain vocabulary for cricket-scoreboard's "what data is here"
+        "player", "players", "score", "scores", "runs", "name", "names",
+        "data", "number", "numbers", "label", "labels", "entry", "entries",
+        "team", "teams", "match", "matches"
+      ],
       whatToNotice: [
         "Player names and their scores",
-        "The scale is growing — more players, more matches",
+        "The scale is growing - more players, more matches",
         "Entries are numbered and organised in sequence"
       ],
       notYetReady: [
@@ -56,24 +62,24 @@ const seedData = [
     // ─── Phase 2: First Attempt ─────────────────────────
     firstAttempt: {
       prompt:    "Arjun starts writing: score1 = 23, score2 = 8, score3 = 45... How would you organise all 80 players' scores?",
-      modelGood: "Creates one label per player: player1, runs1, player2, runs2... — or similar numbered grouping approach",
+      modelGood: "Creates one label per player: player1, runs1, player2, runs2... - or similar numbered grouping approach",
       modelWeak: "Suggests writing everything in a list on paper, or using Excel rows and columns",
-      reveals:   "The learner's first instinct reveals their mental model — are they thinking about naming, sequence, or grouping?"
+      reveals:   "The learner's first instinct reveals their mental model - are they thinking about naming, sequence, or grouping?"
     },
 
     // ─── Phase 3: Guided Questions ──────────────────────
     // Each question references a misconception from backend/misconceptions/ by ID.
-    // Order matters — questions are asked sequentially.
+    // Order matters - questions are asked sequentially.
     guidedQuestions: [
       {
-        question: "Vikram's score was entered wrong — 18, not 8. How do you find the exact line to fix?",
+        question: "Vikram's score was entered wrong - 18, not 8. How do you find the exact line to fix?",
         targetsMisconception: "naming-collision",
         topic: "correction difficulty",
         order: 1,
         ifStuck: "Show me how Vikram's entries appear in the notebook. Where exactly is the wrong number written?"
       },
       {
-        question: "If Rohit scored in 10 matches this season — how many separate score entries does he have? Where are they in the notebook?",
+        question: "If Rohit scored in 10 matches this season - how many separate score entries does he have? Where are they in the notebook?",
         targetsMisconception: "naming-collision",
         topic: "grouping awareness",
         order: 2,
@@ -106,8 +112,8 @@ const seedData = [
 
     // ─── Phase 5: Discovery ─────────────────────────────
     discovery: {
-      bridgeQuestion: "If all of Vikram's scores belong together — should they also be stored together?",
-      hint:            "Think about where Vikram's scores appear in the notebook. Are they near each other — or scattered with gaps and other players between them?"
+      bridgeQuestion: "If all of Vikram's scores belong together - should they also be stored together?",
+      hint:            "Think about where Vikram's scores appear in the notebook. Are they near each other - or scattered with gaps and other players between them?"
     },
 
     // ─── Phase 6: Programming Mapping ───────────────────
@@ -164,7 +170,7 @@ const seedData = [
     // ─── Extension ──────────────────────────────────────
     extension: {
       title:       "The Attendance Register",
-      description: "A teacher needs to track attendance for 35 students across 200 school days. Each day has 35 attendance entries. Design how you'd organise this data — in words, not code.",
+      description: "A teacher needs to track attendance for 35 students across 200 school days, which works out to 35 attendance entries every single day. When the school year ends, the teacher needs to find every absence for one student across the full 200 days. How should she organise the register so this kind of search takes seconds rather than hours?",
       format:      "Describe your approach in full sentences. No Python required yet.",
       sparks: [
         "How many total attendance entries is that?",
@@ -175,8 +181,8 @@ const seedData = [
   },
 
   // ══════════════════════════════════════════════════════
-  // CASE STUDY 2 — The Tiffin Service Orders
-  // Teaches: Dictionaries — grouping by key instead of by position
+  // CASE STUDY 2 - The Tiffin Service Orders
+  // Teaches: Dictionaries - grouping by key instead of by position
   // Prerequisite: Cricket Scoreboard (Lists)
   // ══════════════════════════════════════════════════════
 
@@ -184,7 +190,7 @@ const seedData = [
     id: "tiffin-service-orders",
     title: "The Tiffin Service Orders",
     subtitle: "When finding one customer's order takes too long",
-    description: "Meera runs a tiffin service from her home in Bangalore. Every day she prepares 30 lunch tiffins for 30 different customers. Each tiffin goes to a specific address in a specific city — Mumbai, Delhi, Pune, Kochi, and more. When a customer calls to modify their order, Meera has to find their entry in the notebook. But she doesn't know which page number Mumbai is on.",
+    description: "Meera runs a tiffin service from her home in Bangalore. Every day she prepares 30 lunch tiffins for 30 different customers, and each one goes to a specific address in a specific city such as Mumbai, Delhi, Pune, or Kochi. When a customer calls to modify their order, Meera has to find their entry in her notebook, but she does not know which page number Mumbai is on. When the customer tells her their name and city instead of a page number, how should Meera reorganise the notebook so she can find them quickly?",
     author: "PyBe Content Team",
     difficulty: "beginner",
     estimatedMin: 25,
@@ -206,18 +212,24 @@ const seedData = [
     story: {
       setting:     "A home kitchen in Bangalore",
       protagonist: "Meera, who runs a tiffin service cooking 30 tiffins daily",
-      situation:   "Track 30 daily tiffin orders — city destination, delivery address, tiffin count, and time",
-      tension:     "Every afternoon a regular calls to modify their order. Meera opens her notebook and starts flipping. She knows the city — Mumbai, Delhi, Pune — but doesn't know which page number it is.",
+      situation:   "Track 30 daily tiffin orders - city destination, delivery address, tiffin count, and time",
+      tension:     "Every afternoon a regular calls to modify their order. Meera opens her notebook and starts flipping. She knows the city - Mumbai, Delhi, Pune - but doesn't know which page number it is.",
       emotion:     "Exhausted from page-flipping through 30 entries just to find one customer's city"
     },
 
     // ─── Phase 1: Observation ───────────────────────────
     observation: {
       prompt:       "What do you notice about what Meera is managing?",
+      expectedKeywords: [
+        // Domain vocabulary for tiffin-service-orders's "what data is here"
+        "order", "orders", "customer", "customers", "address", "city",
+        "cities", "tiffin", "tiffins", "count", "name", "names", "data",
+        "number", "numbers", "delivery", "phone", "time"
+      ],
       whatToNotice: [
         "30 orders, each going to a different city",
         "Each order has: city name, delivery address, tiffin count, and time",
-        "Meera gets called by customers who say their city name — 'I'm in Mumbai', 'I'm in Delhi'"
+        "Meera gets called by customers who say their city name - 'I'm in Mumbai', 'I'm in Delhi'"
       ],
       notYetReady: [
         "Only talks about cooking or food",
@@ -227,7 +239,7 @@ const seedData = [
 
     // ─── Phase 2: First Attempt ─────────────────────────
     firstAttempt: {
-      prompt:    "Meera's notebook looks like this:\n\norder1 = 'Mumbai',   addr1 = '12 MG Road, Mumbai',    count1 = 3, time1 = '12:30 PM'\norder2 = 'Delhi',    addr2 = '45 CP, New Delhi',      count2 = 5, time2 = '1:00 PM'\norder3 = 'Kochi',    addr3 = '7 Marine Drive, Kochi', count3 = 2, time3 = '1:30 PM'\n\n...up to order30. Show me — in your own words — what pattern do you see? What happens when a customer calls and says 'I'm in Mumbai'? How does Meera find Mumbai in the notebook?",
+      prompt:    "Meera's notebook looks like this:\n\norder1 = 'Mumbai',   addr1 = '12 MG Road, Mumbai',    count1 = 3, time1 = '12:30 PM'\norder2 = 'Delhi',    addr2 = '45 CP, New Delhi',      count2 = 5, time2 = '1:00 PM'\norder3 = 'Kochi',    addr3 = '7 Marine Drive, Kochi', count3 = 2, time3 = '1:30 PM'\n\n...up to order30. Show me - in your own words - what pattern do you see? What happens when a customer calls and says 'I'm in Mumbai'? How does Meera find Mumbai in the notebook?",
       modelGood: "Describes the pattern: numbered orders, each holding a city name and delivery details",
       modelWeak: "Suggests using an app or Excel",
       reveals:   "The learner sees the numbered-entry pattern. The lookup problem is hiding in plain sight."
@@ -243,45 +255,45 @@ const seedData = [
         ifStuck: "The notebook has order1 through order30. To find Mumbai, Meera reads order1, then order2, then order3... until she finds the city name. How many entries might she read before finding it?"
       },
       {
-        question: "Meera has 30 orders. A new customer — Priya in Chennai — calls for the first time. Where does her entry go? Does anything else in the notebook change?",
+        question: "Meera has 30 orders. A new customer - Priya in Chennai - calls for the first time. Where does her entry go? Does anything else in the notebook change?",
         targetsMisconception: "static-structure",
         topic: "where new entries land",
         order: 2,
         ifStuck: "Does Priya go at the end as order31? Does anything before it change?"
       },
       {
-        question: "If Meera wrote the city name directly in the notebook — 'Mumbai' instead of order1, 'Delhi' instead of order2 — does she still need to search through order1, order2, order3 to find a city?",
+        question: "If Meera wrote the city name directly in the notebook - 'Mumbai' instead of order1, 'Delhi' instead of order2 - does she still need to search through order1, order2, order3 to find a city?",
         targetsMisconception: "position-based-lookup",
         topic: "can the search be bypassed entirely",
         order: 3,
-        ifStuck: "If the notebook said 'Mumbai: 12 MG Road, 3 tiffins, 12:30 PM' directly — not as order1 — what does Meera do when a Mumbai customer calls?"
+        ifStuck: "If the notebook said 'Mumbai: 12 MG Road, 3 tiffins, 12:30 PM' directly - not as order1 - what does Meera do when a Mumbai customer calls?"
       }
     ],
 
     // ─── Phase 4: Cognitive Trigger ─────────────────────
     cognitiveTrigger: {
-      statement:        "30 orders. Every afternoon, 10 to 15 regular customers call to check or modify their tiffins. Each call takes 2 to 3 minutes of page-flipping to find the right city. That's up to 45 minutes of searching every single day — just to find one customer's entry.",
-      presentationNote: "Let the number land. 45 minutes. Not because the data is missing — but because the notebook entries don't carry their own city name.",
+      statement:        "30 orders. Every afternoon, 10 to 15 regular customers call to check or modify their tiffins. Each call takes 2 to 3 minutes of page-flipping to find the right city. That's up to 45 minutes of searching every single day - just to find one customer's entry.",
+      presentationNote: "Let the number land. 45 minutes. Not because the data is missing - but because the notebook entries don't carry their own city name.",
       pauseRequired:    true,
-      learnerReady:     "Recognises the frustration — 45 minutes of searching every afternoon, just because order1 doesn't tell Meera what city it is",
-      learnerNotYet:    "Suggests 'use an app' or 'keep it more organised' — treating the symptom, not the structure"
+      learnerReady:     "Recognises the frustration - 45 minutes of searching every afternoon, just because order1 doesn't tell Meera what city it is",
+      learnerNotYet:    "Suggests 'use an app' or 'keep it more organised' - treating the symptom, not the structure"
     },
 
     // ─── Phase 5: Discovery ─────────────────────────────
     discovery: {
-      bridgeQuestion: "What if the notebook already had the city name written directly on it — and Meera just had to read the city name to find the entry? What if order1 didn't exist — and instead the notebook just said:\n\n'Mumbai: 12 MG Road, 3 tiffins, 12:30 PM'\n'Delhi: 45 CP, 5 tiffins, 1:00 PM'\n'Kochi: 7 Marine Drive, 2 tiffins, 1:30 PM'?",
-      hint:            "When Meera opens the notebook and sees the word 'Mumbai' written directly on the page — does she need to know what number Mumbai is? Or does she just read it?"
+      bridgeQuestion: "What if the notebook already had the city name written directly on it - and Meera just had to read the city name to find the entry? What if order1 didn't exist - and instead the notebook just said:\n\n'Mumbai: 12 MG Road, 3 tiffins, 12:30 PM'\n'Delhi: 45 CP, 5 tiffins, 1:00 PM'\n'Kochi: 7 Marine Drive, 2 tiffins, 1:30 PM'?",
+      hint:            "When Meera opens the notebook and sees the word 'Mumbai' written directly on the page - does she need to know what number Mumbai is? Or does she just read it?"
     },
 
     // ─── Phase 6: Programming Mapping ───────────────────
     programmingMapping: {
-      introduction: "What you just described is how a Dictionary works in Python. Each entry has a name — a key — that the notebook carries with it. You don't search by number. You search by name.",
+      introduction: "What you just described is how a Dictionary works in Python. Each entry has a name - a key - that the notebook carries with it. You don't search by number. You search by name.",
       pythonCode:   "orders = {\n    'Mumbai': {'address': '12 MG Road',   'count': 3, 'time': '12:30 PM'},\n    'Delhi':  {'address': '45 CP',         'count': 5, 'time': '1:00 PM'},\n    'Kochi':  {'address': '7 Marine Drive', 'count': 2, 'time': '1:30 PM'}\n}",
       symbols: [
         { symbol: "orders",                meaning: "One name for the entire orders collection" },
         { symbol: "{",                     meaning: "The dictionary begins here" },
-        { symbol: "'Mumbai':",             meaning: "'Mumbai' is the key — the name Meera already knows from the phone call" },
-        { symbol: "{'address': ...}",      meaning: "All the order details for Mumbai — the value stored under the key 'Mumbai'" },
+        { symbol: "'Mumbai':",             meaning: "'Mumbai' is the key - the name Meera already knows from the phone call" },
+        { symbol: "{'address': ...}",      meaning: "All the order details for Mumbai - the value stored under the key 'Mumbai'" },
         { symbol: ",",                    meaning: "Separates each key-value pair" },
         { symbol: "}",                     meaning: "The dictionary ends here" }
       ],
@@ -300,10 +312,10 @@ const seedData = [
     // ─── Phase 8: Reflection ────────────────────────────
     reflection: {
       questions: [
-        "In Meera's old notebook — order1, order2, order3 — what did she have to know before she could find Mumbai?",
-        "In the new system — 'Mumbai': {'address': ...} — what does Meera need to know before she can find Mumbai?",
+        "In Meera's old notebook - order1, order2, order3 - what did she have to know before she could find Mumbai?",
+        "In the new system - 'Mumbai': {'address': ...} - what does Meera need to know before she can find Mumbai?",
         "What is the difference between searching by position and searching by name?",
-        "In your own life, is there something you look up by name — not by number — that would benefit from this structure?"
+        "In your own life, is there something you look up by name - not by number - that would benefit from this structure?"
       ],
       confidenceSurvey: [
         {
@@ -328,24 +340,26 @@ const seedData = [
     // ─── Extension ──────────────────────────────────────
     extension: {
       title:       "The Neighbourhood Salon",
-      description: "Aditi runs a small salon. She has 25 daily appointments — each with a client name, service type, time, and phone number. A client calls and says 'This is Priya, I have an appointment at 3 PM, can I reschedule?' Aditi needs to find Priya's appointment in seconds. Design how she'd organise this.",
+      description: "Aditi runs a small salon with 25 appointments every day, and each appointment carries a client name, a service type, a time, and a phone number. When a client calls and says 'This is Priya, I have an appointment at 3 PM, can I reschedule?' Aditi needs to find Priya's appointment in seconds, not in minutes. How should Aditi organise today's list so that the lookup by client name is instant?",
       format:      "Describe your approach in full sentences. No Python required yet.",
       sparks: [
         "What does the client know when they call? A name or an appointment number?",
-        "How many different ways might Aditi want to look up an appointment — by name, by time, by service?",
+        "How many different ways might Aditi want to look up an appointment - by name, by time, by service?",
         "Would a Dictionary be enough here, or would it need something more?"
       ]
     }
   },
 
   // ══════════════════════════════════════════════════════
-  // EXISTING CASE STUDIES — unchanged
+  // EXISTING CASE STUDIES - unchanged
   // Uses old schema (pre-v1.1). tutorController handles gracefully.
   // ══════════════════════════════════════════════════════
 
   {
+    id:    "bakery-checkout",
     title: "The Bakery Checkout",
-    description: "You're building a checkout system for a bakery. A customer buys 3 croissants ($2.50 each) and 2 coffees ($3.00 each). Write a program to calculate the total cost.",
+    subtitle: "Variables hold the price, arithmetic finds the total",
+    description: "You are building a checkout system for a small bakery. A customer buys 3 croissants at $2.50 each and 2 coffees at $3.00 each, and the program has to compute the total cost for the till. Before you write any code, what variables would you create, and how would you combine them to print the correct total?",
     requiredConcepts: ["Variables", "Basic Arithmetic"],
     targetInsight: "Understand how to store values in variables and use operators to compute a total.",
     followUpQuestions: ["How would you apply a 10% discount to the total?", "What if the user inputs the number of items?"],
@@ -353,11 +367,33 @@ const seedData = [
     starterCode: "croissant_price = 2.50\ncoffee_price = 3.00\n\n# Calculate total here",
     testCases: [
       { input: "", expectedOutput: "13.5" }
-    ]
+    ],
+    // ─── Phase 1: Observation ───────────────────────────
+    observation: {
+      prompt: "Before we write any code, what information is hiding inside this problem? What numbers do we need to remember, and what numbers do we need to compute?",
+      expectedKeywords: [
+        // Domain vocabulary for bakery-checkout's "what data is here"
+        "price", "prices", "cost", "total", "item", "items",
+        "quantity", "quantities", "count", "number", "numbers",
+        "croissant", "croissants", "coffee", "coffees",
+        "data", "value", "values", "subtotal"
+      ],
+      whatToNotice: [
+        "Two separate prices - $2.50 for a croissant, $3.00 for a coffee",
+        "Two quantities - 3 croissants and 2 coffees",
+        "A relationship: total = (3 \u00d7 2.50) + (2 \u00d7 3.00)"
+      ],
+      notYetReady: [
+        "Jumps straight to writing code without identifying the inputs",
+        "Only mentions the answer (the total) without naming the parts that combine to make it"
+      ]
+    }
   },
   {
+    id:    "age-verification-system",
     title: "Age Verification System",
-    description: "A website requires users to be at least 18 years old to create an account. Write a program that checks an 'age' variable and prints 'Access Granted' or 'Access Denied'.",
+    subtitle: "A single condition decides who gets in",
+    description: "A website requires users to be at least 18 years old before they can create an account. The program should read an age variable and print either 'Access Granted' or 'Access Denied'. Before you write the if-statement, what condition should decide whether the user is allowed in?",
     requiredConcepts: ["Conditionals", "Comparison Operators"],
     targetInsight: "Learn to use if/else statements to control the flow of the program based on conditions.",
     followUpQuestions: ["What happens if the age is exactly 18?", "How can you add a message for users under 13?"],
@@ -366,11 +402,32 @@ const seedData = [
     testCases: [
       { input: "16", expectedOutput: "Access Denied" },
       { input: "20", expectedOutput: "Access Granted" }
-    ]
+    ],
+    // ─── Phase 1: Observation ───────────────────────────
+    observation: {
+      prompt: "What is the rule this program is enforcing, and what piece of data is the rule checking against?",
+      expectedKeywords: [
+        // Domain vocabulary for age-verification-system's "what data is here"
+        "age", "ages", "year", "years", "old", "young", "eighteen",
+        "18", "number", "numbers", "data", "threshold", "limit",
+        "rule", "check", "condition", "allowed", "denied", "granted"
+      ],
+      whatToNotice: [
+        "The program reads one piece of data - the user's age",
+        "There is one threshold - 18 - that splits allowed from denied",
+        "The output is one of two fixed messages, decided by a single comparison"
+      ],
+      notYetReady: [
+        "Only describes how to write the if-statement without naming the threshold",
+        "Confuses the comparison (>= 18) with the action (print message)"
+      ]
+    }
   },
   {
+    id:    "inventory-stock-checker",
     title: "Inventory Stock Checker",
-    description: "A store has a list of items in stock: ['Apples', 'Bananas', 'Oranges', 'Milk']. Write a program that loops through the list and prints 'Item in stock: <item>'.",
+    subtitle: "A list holds many items, a loop visits each one",
+    description: "A store keeps its in-stock items in a Python list: ['Apples', 'Bananas', 'Oranges', 'Milk']. The program needs to walk through the list and print 'Item in stock: <item>' for every entry. Before you write the loop, what is the smallest piece of code that can print just the first item?",
     requiredConcepts: ["Lists", "For Loops"],
     targetInsight: "Understand iteration and how to access elements in a collection sequentially.",
     followUpQuestions: ["How would you only print items that start with 'A'?", "What if you want to count the total number of items?"],
@@ -378,7 +435,26 @@ const seedData = [
     starterCode: "inventory = ['Apples', 'Bananas', 'Oranges', 'Milk']\n\n# Loop through the list here",
     testCases: [
       { input: "", expectedOutput: "Item in stock: Apples\nItem in stock: Bananas\nItem in stock: Oranges\nItem in stock: Milk" }
-    ]
+    ],
+    // ─── Phase 1: Observation ───────────────────────────
+    observation: {
+      prompt: "Look at the data the program starts with. What shape does it take, and what would the smallest piece of code that prints just one item look like?",
+      expectedKeywords: [
+        // Domain vocabulary for inventory-stock-checker's "what data is here"
+        "list", "lists", "item", "items", "inventory", "stock",
+        "in stock", "loop", "loops", "each", "every", "all",
+        "first", "walk", "through", "print", "data", "name", "names"
+      ],
+      whatToNotice: [
+        "The data is a Python list - a single collection holding many items",
+        "The order matters: items are visited one after another, starting at the first",
+        "Printing one item (the smallest step) hints at why we need a loop to handle many"
+      ],
+      notYetReady: [
+        "Skips past the data shape and goes straight to writing a for-loop",
+        "Doesn't notice that there is a single collection, not many separate variables"
+      ]
+    }
   }
 ];
 

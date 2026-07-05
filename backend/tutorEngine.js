@@ -8,7 +8,10 @@ module.exports = {
   // ─── Engine Config ─────────────────────────────────────
   engine: {
     version:        1,
-    model:          "gemini-1.5-flash",
+    // gemini-1.5-flash retired (404). gemini-2.0-flash / -lite / -pro are
+    // returning 429 quota-exceeded on this key, but gemini-2.5-flash still
+    // has free-tier headroom. Use it.
+    model:          "gemini-2.5-flash",
     temperature:    0.7,
     responseFormat: "json",
     timeout:        30000
@@ -175,9 +178,10 @@ module.exports = {
     ],
 
     fallback: {
-      error:   "I had trouble processing that. Could you try rephrasing?",
-      timeout: "I ran out of time thinking about that. Let's continue.",
-      unknown: "I'm not sure I understood that correctly. Could you say it differently?"
+      error:     "I had trouble processing that. Could you try rephrasing?",
+      timeout:   "I ran out of time thinking about that. Let's continue.",
+      unknown:   "I'm not sure I understood that correctly. Could you say it differently?",
+      rateLimit: "The AI tutor is currently busy (rate-limit reached). Please wait a few seconds and try again — your last message is still saved."
     }
   },
 

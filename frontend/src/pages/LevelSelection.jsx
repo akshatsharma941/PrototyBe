@@ -1,13 +1,65 @@
-import React from 'react';
+// Load case studies from the backend instead of the local mockData.js.
+// Backend (backend/seedData.js) is the single source of truth — adding a
+// new entry there makes a new card appear here on next load.
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockLevels } from '../data/mockData';
-import { Lock, Unlock, CheckCircle, Flag, Zap, Compass, ArrowLeft } from 'lucide-react';
+// Imports: kajal's 242c2f8 removed `mockLevels`, `Lock`, `CheckCircle` because
+// the page became backend-driven (case studies are fetched from the API).
+// Upstream PR #2 (9f790a3) added `ArrowLeft` + `Logo` for the new header.
+// We keep both intents: backend-driven loading AND the new header chrome.
 import { useProgress } from '../context/ProgressContext';
+import { Unlock, Flag, Zap, Compass, ArrowLeft } from 'lucide-react';
 import Logo from '../components/common/Logo';
+
+const API_BASE = 'http://localhost:5000';
 
 const LevelSelection = () => {
   const navigate = useNavigate();
   const { xp, discoveredConcepts, getLevelProgress } = useProgress();
+
+  // Backend-driven case studies. Until the load finishes we render an empty
+  // list. While loading or on error we show a small inline status message
+  // rather than blocking the user.
+  const [caseStudies, setCaseStudies] = useState([]);
+  const [status, setStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(`${API_BASE}/api/case-studies`)
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (cancelled) return;
+        // Backend returns Mongo docs; fall back to _id if no slug.
+        const list = (data || []).map(cs => ({
+          id: cs.id || cs._id,
+          title: cs.title,
+          description: cs.description,
+          subtitle: cs.subtitle,
+          difficulty: cs.difficulty,
+          tags: cs.tags || []
+        }));
+        setCaseStudies(list);
+        setStatus('ready');
+      })
+      .catch(err => {
+        if (cancelled) return;
+        console.error('Failed to load case studies:', err);
+        setStatus('error');
+      });
+
+    return () => { cancelled = true; };
+  }, []);
+
+  const onCardClick = (item) => {
+    // Each card points at the canonical case-study route using its backend id.
+    // ProgressContext still treats them as a single "level 1" unlocked level
+    // for this incremental step — full unlock/mission wiring comes later.
+    navigate(`/case-study/${encodeURIComponent(item.id)}`);
+  };
 
   return (
     <div style={{ 
@@ -108,81 +160,90 @@ const LevelSelection = () => {
             zIndex: 0
           }} />
 
-          {mockLevels.map((level, index) => {
-            const { percent, isUnlocked } = getLevelProgress(level.levelNumber);
-            
+          {/* Click target: each fetched case study. While we still have the
+              old Level id scheme inside ProgressContext, every card reports
+              as "Level 1" (always unlocked). Once Levels support lands, this
+              will derive level metadata from the case study itself. */}
+          {caseStudies.length === 0 && status !== 'error' && (
+            <p style={{ color: 'var(--text-secondary)' }}>Loading case studies…</p>
+          )}
+          {status === 'error' && (
+            <p style={{ color: 'var(--text-secondary)' }}>
+              Could not load case studies from backend. Make sure the server is running on port 5000.
+            </p>
+          )}
+          {caseStudies.map((cs) => {
+            // Temporary: keep all case studies in a single unlocked bucket so
+            // the existing ProgressContext continues to function unchanged.
+            const { percent } = getLevelProgress(1);
+
             return (
-              <div 
-                key={level.id}
-                className={`glass-panel ${!isUnlocked ? 'ide-disabled' : ''}`}
-                style={{ 
-                  padding: '2rem', 
-                  display: 'flex', 
+              <div
+                key={cs.id}
+                className="glass-panel"
+                style={{
+                  padding: '2rem',
+                  display: 'flex',
                   gap: '2rem',
                   alignItems: 'center',
-                  cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                  cursor: 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
-                  opacity: isUnlocked ? 1 : 0.6,
+                  opacity: 1,
                   position: 'relative',
                   zIndex: 1,
-                  marginLeft: index % 2 === 0 ? '40px' : '0px',
-                  marginRight: index % 2 === 0 ? '0px' : '40px',
+                  marginLeft: '40px',
+                  marginRight: '0px',
                 }}
-                onClick={() => isUnlocked && navigate(`/level/${level.id}/missions`)}
+                onClick={() => onCardClick(cs)}
                 onMouseEnter={(e) => {
-                  if(isUnlocked) {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
-                  }
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
                 }}
                 onMouseLeave={(e) => {
-                  if(isUnlocked) {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                  }
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                 }}
               >
-                <div style={{ 
-                  width: '60px', 
-                  height: '60px', 
-                  borderRadius: '50%', 
-                  background: percent === 100 ? 'rgba(16, 185, 129, 0.2)' : (isUnlocked ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-primary)'),
+                <div style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: 'rgba(59, 130, 246, 0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  border: `2px solid ${isUnlocked ? 'var(--accent-secondary)' : 'var(--glass-border)'}`
+                  border: `2px solid var(--accent-secondary)`
                 }}>
-                  {percent === 100 ? (
-                    <CheckCircle size={28} color="var(--success)" />
-                  ) : isUnlocked ? (
-                    <Unlock size={28} color="var(--accent-secondary)" />
-                  ) : (
-                    <Lock size={28} color="var(--text-secondary)" />
-                  )}
+                  <Unlock size={28} color="var(--accent-secondary)" />
                 </div>
 
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem' }}>
-                    <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)' }}>Level {level.levelNumber}: {level.title}</h2>
+                    <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)' }}>{cs.title}</h2>
                   </div>
+                  {cs.subtitle && (
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '0.5rem', fontStyle: 'italic' }}>
+                      {cs.subtitle}
+                    </p>
+                  )}
                   <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1rem' }}>
-                    {level.description}
+                    {cs.description}
                   </p>
-                  
+
                   <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', fontSize: '0.9rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
                       <Flag size={16} color="var(--accent-secondary)" />
-                      <span>{level.missions.length} Missions</span>
+                      <span>{cs.tags?.length || 0} Topics</span>
                     </div>
-                    
+
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '200px' }}>
                       <span style={{ color: 'var(--text-secondary)' }}>Progress:</span>
                       <div style={{ flex: 1, height: '8px', background: 'var(--bg-primary)', borderRadius: '4px', overflow: 'hidden' }}>
-                        <div style={{ 
-                          height: '100%', 
-                          width: `${percent}%`, 
-                          background: percent === 100 ? 'var(--success)' : 'linear-gradient(90deg, var(--accent-secondary), var(--accent-primary))',
+                        <div style={{
+                          height: '100%',
+                          width: `${percent}%`,
+                          background: 'linear-gradient(90deg, var(--accent-secondary), var(--accent-primary))',
                           borderRadius: '4px'
                         }} />
                       </div>

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const CaseStudy = require('../models/CaseStudy');
 
 exports.getCaseStudies = async (req, res) => {
@@ -9,9 +10,22 @@ exports.getCaseStudies = async (req, res) => {
   }
 };
 
+// Lookup by either Mongo _id (ObjectId) or the human-readable `id` slug
+// (e.g. "cricket-scoreboard"). Frontend routes use the slug, so without
+// this fallback a GET /api/case-studies/:slug would always 500.
 exports.getCaseStudyById = async (req, res) => {
   try {
-    const caseStudy = await CaseStudy.findById(req.params.id);
+    const { id } = req.params;
+    let caseStudy = null;
+
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      caseStudy = await CaseStudy.findById(id);
+    }
+
+    if (!caseStudy) {
+      caseStudy = await CaseStudy.findOne({ id });
+    }
+
     if (!caseStudy) {
       return res.status(404).json({ message: 'Case study not found' });
     }
