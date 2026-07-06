@@ -274,6 +274,36 @@ body {
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
 }
 
+/* Back Button */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  text-decoration: none;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transform: translateX(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-back:active {
+  transform: translateX(0);
+}
+
 /* IDE Area */
 .ide-header {
   padding: 1rem 1.5rem;

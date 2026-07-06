@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockLevels } from '../data/mockData';
-import { Lock, Unlock, CheckCircle, Flag, Zap, Compass } from 'lucide-react';
+import { Lock, Unlock, CheckCircle, Flag, Zap, Compass, ArrowLeft } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
 
 const LevelSelection = () => {
@@ -17,6 +17,14 @@ const LevelSelection = () => {
       background: 'radial-gradient(circle at top left, rgba(59, 130, 246, 0.05), transparent 50%)'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '1rem' }}>
+          <button 
+            onClick={() => navigate('/')}
+            className="btn-back"
+          >
+            <ArrowLeft size={16} /> Back to Home
+          </button>
+        </div>
         {/* Profile Progress Bar */}
         <div style={{ 
           width: '100%', 

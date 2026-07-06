@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import ProgressTracker from '../components/workspace/ProgressTracker';
 import LeftPanel from '../components/workspace/LeftPanel';
 import RightPanel from '../components/workspace/RightPanel';
 
 const MissionExperience = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   
   // Mock mission fetching
   const mission = {
@@ -50,8 +52,20 @@ const MissionExperience = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       
-      {/* Top Tracker */}
-      <ProgressTracker currentStage={currentStage} />
+      {/* Top Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--glass-border)' }}>
+        <div style={{ paddingLeft: '1rem', borderRight: '1px solid var(--glass-border)', paddingRight: '1.5rem', display: 'flex', alignItems: 'center' }}>
+          <button 
+            onClick={() => navigate('/levels')}
+            className="btn-back"
+          >
+            <ArrowLeft size={16} /> Back
+          </button>
+        </div>
+        <div style={{ flex: 1 }}>
+          <ProgressTracker currentStage={currentStage} />
+        </div>
+      </div>
 
       {/* Main Workspace */}
       <div ref={containerRef} style={{ display: 'flex', flex: 1, minHeight: 0 }}>

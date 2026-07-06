@@ -22,22 +22,14 @@ const Missions = () => {
       background: 'radial-gradient(circle at top right, rgba(139, 92, 246, 0.05), transparent 50%)'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <button 
-          onClick={() => navigate('/levels')}
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.5rem', 
-            background: 'none', 
-            border: 'none', 
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            fontSize: '1rem',
-            marginBottom: '2rem'
-          }}
-        >
-          <ArrowLeft size={18} /> Back to Levels
-        </button>
+        <div style={{ marginBottom: '2rem' }}>
+          <button 
+            onClick={() => navigate('/levels')}
+            className="btn-back"
+          >
+            <ArrowLeft size={16} /> Back to Levels
+          </button>
+        </div>
 
         <header style={{ marginBottom: '4rem' }}>
           <h1 style={{ 
