@@ -455,6 +455,183 @@ const seedData = [
         "Doesn't notice that there is a single collection, not many separate variables"
       ]
     }
+  },
+
+  // ══════════════════════════════════════════════════════
+  // CASE STUDY 3 - The Attendance Register
+  // Teaches: Lists - one name, many students
+  // When "8 became 42", one piece of paper stopped being enough.
+  // ══════════════════════════════════════════════════════
+
+  {
+    id: "attendance-register",
+
+    title: "The Attendance Register",
+    subtitle: "When one piece of paper is no longer enough",
+    description: "Arjun is covering Mrs. Iyer's homeroom. On Monday there are 8 students and one printed sheet of names. By Wednesday the names have spilled onto three sheets. On Friday the homeroom merges with another section for a school assembly and there are 42 students. The teacher next door turns to Arjun and says, 'Just give me the list.' Arjun looks at his three sheets and says, 'I don't have a list. I have a pile.' What should Arjun have done differently on Monday to be ready for Friday?",
+    requiredConcepts: ["Lists", "Variables"],
+    targetInsight: "A list is one name for many things. When more than one thing belongs together, give the group one name instead of many.",
+    followUpQuestions: [
+      "If a new student joins on Friday, what does Arjun do to add them?",
+      "How would Arjun answer 'how many students?' on Wednesday? On Friday?",
+      "Why did the teacher say 'the list' and not 'the sheets'?"
+    ],
+    pythonTopics: ["lists", "len", "append", "indexing"],
+    starterCode: "students = []\n\n# Add the 8 students from Monday\n# Then answer: how many students does Arjun have?",
+    testCases: [
+      { input: "", expectedOutput: "8" }
+    ],
+
+    // ─── Learning Objectives ────────────────────────────
+    objectives: [
+      { id: "obj-1", label: "Recognise when many things belong together" },
+      { id: "obj-2", label: "Explain why separate variables break down at scale" },
+      { id: "obj-3", label: "Use a Python List to store multiple values under one name" }
+    ],
+
+    // ─── The Story ──────────────────────────────────────
+    story: {
+      setting:     "A school homeroom, Monday through Friday",
+      protagonist: "Arjun, the substitute teacher for the week",
+      situation:   "Track attendance as new students keep joining throughout the week",
+      tension:     "By Friday there are 42 students and Arjun is holding three pieces of paper - and a teacher is waiting for 'the list'",
+      emotion:     "The quiet panic of realising the obvious approach has stopped working in front of someone"
+    },
+
+    // ─── Phase 1: Observation ───────────────────────────
+    observation: {
+      prompt: "What is Arjun keeping track of, and how is he keeping track of it?",
+      expectedKeywords: [
+        "student", "students", "name", "names", "attendance",
+        "paper", "papers", "sheet", "sheets", "page", "pages",
+        "list", "pile", "register", "roster", "class"
+      ],
+      whatToNotice: [
+        "Arjun is tracking one kind of thing - student names",
+        "The number of names grew across the week - 8, then 10, then 14, then 42",
+        "The way he tracks them also grew - one sheet, two sheets, three sheets"
+      ],
+      notYetReady: [
+        "Only talks about attendance rules or school policy",
+        "Mentions the principal or the assembly but not the data being managed"
+      ]
+    },
+
+    // ─── Phase 2: First Attempt ─────────────────────────
+    firstAttempt: {
+      prompt: "If you were Arjun on Monday and you only had a blank piece of paper - no printed sheet - how would you record the 8 students? What would you write down?",
+      modelGood: "Writes down the names - one per line - and says 'the paper holds the names'",
+      modelWeak: "Suggests using an app, or memorising the names, or asking each student to introduce themselves",
+      reveals: "The learner's instinct about what 'recording many of the same kind of thing' looks like before they have a word for it"
+    },
+
+    // ─── Phase 3: Guided Questions ──────────────────────
+    guidedQuestions: [
+      {
+        question: "On Wednesday Arjun ran out of room on the first sheet. He grabbed a second piece of paper. Then a third. How many sheets does Arjun have to hold in his head at once now?",
+        targetsMisconception: "static-structure",
+        topic: "when one container stops being enough",
+        order: 1,
+        ifStuck: "Three sheets. To answer 'is Aarav here today?', Arjun has to look at all three. How does he know which sheet to look at first?"
+      },
+      {
+        question: "On Friday a teacher asks, 'How many students are here today?' Arjun has three sheets. How does he answer that question?",
+        targetsMisconception: "scale-failure",
+        topic: "counting across many pieces",
+        order: 2,
+        ifStuck: "Arjun has to count the names on sheet 1, then sheet 2, then sheet 3, then add them. What if he loses his place on sheet 2?"
+      },
+      {
+        question: "A new student walks in on Friday. Arjun has to add her name. Where does she go - sheet 1, sheet 2, or sheet 3? Does Arjun have to decide, or does it not matter?",
+        targetsMisconception: "static-structure",
+        topic: "where new entries land",
+        order: 3,
+        ifStuck: "Pick the sheet that has the most space. But what if a teacher later asks, 'is Meera in this class?' - which sheet does Arjun check first?"
+      },
+      {
+        question: "The teacher said 'the list'. She didn't say 'the sheets'. What do you think she meant by that word?",
+        targetsMisconception: "naming-collision",
+        topic: "one name for many things",
+        order: 4,
+        ifStuck: "If the teacher wanted 'the sheets', she would have said 'the sheets'. Why did she say 'the list'? What was she expecting Arjun to hand her?"
+      }
+    ],
+
+    // ─── Phase 4: Cognitive Trigger ─────────────────────
+    cognitiveTrigger: {
+      statement:        "On Monday Arjun had 8 names on one sheet. By Friday he had 42 names on three sheets - and a teacher waiting for one thing he did not have.",
+      presentationNote: "Say the numbers slowly. Eight. Then ten. Then fourteen. Then forty-two. Then the silence of a teacher waiting.",
+      pauseRequired:    true,
+      learnerReady:     "Recognises that 'three sheets' is not the same kind of thing as 'one list' - and feels the gap",
+      learnerNotYet:    "Says 'just merge the sheets' or 'write smaller' - solving the symptom, not the structure"
+    },
+
+    // ─── Phase 5: Discovery ─────────────────────────────
+    discovery: {
+      bridgeQuestion: "If Arjun could give all the students one name - just one word that refers to every student at once - what would he call it? And what could he ask that one name?",
+      hint:            "Pretend Arjun invents a word. He calls the whole class 'roster'. Now he can ask 'how big is the roster?' and 'is Aarav in the roster?' and 'add Meera to the roster'. One name. Many questions."
+    },
+
+    // ─── Phase 6: Programming Mapping ───────────────────
+    programmingMapping: {
+      introduction: "What you just described has a name in Python. It's called a List. One name. Many things. Many questions answered in one line.",
+      pythonCode:   "students = [\"Aarav\", \"Diya\", \"Ishaan\", \"Priya\", \"Rohan\", \"Kabir\", \"Anaya\", \"Vivaan\"]",
+      symbols: [
+        { symbol: "students",                meaning: "One name for the entire class - Arjun's 'roster'" },
+        { symbol: "=",                        meaning: "Everything on the right is now stored under this one name" },
+        { symbol: "[",                        meaning: "The list begins here" },
+        { symbol: "\"Aarav\", \"Diya\", ...", meaning: "Names, separated by commas, in the order Arjun recorded them" },
+        { symbol: "]",                        meaning: "The list ends here" }
+      ],
+      miniTask:     "Add Sara and Arjun-S to the end of the students list. Then print the total count of students using len()."
+    },
+
+    // ─── Phase 7: Practice ──────────────────────────────
+    practice: [
+      {
+        task:       "Build the attendance register for Monday. Store the 8 students in a list called students. Then print how many students there are.",
+        starterCode: "# Your code here\nstudents = ",
+        hint:       "Start with: students = [\"Aarav\", \"Diya\", ...]. Then on a new line write: print(len(students))"
+      },
+      {
+        task:       "Two students join on Tuesday - Sara and another Arjun. Use append to add them to the same list. Print the new count.",
+        starterCode: "students = [\"Aarav\", \"Diya\", \"Ishaan\", \"Priya\", \"Rohan\", \"Kabir\", \"Anaya\", \"Vivaan\"]\n\n# Your code here",
+        hint:       "students.append(\"Sara\") adds Sara to the end. Do the same for the second student. Then print(len(students))."
+      },
+      {
+        task:       "The teacher asks, 'is Aarav in this class?' Write one line that answers the question.",
+        starterCode: "students = [\"Aarav\", \"Diya\", \"Ishaan\", \"Priya\", \"Rohan\", \"Kabir\", \"Ananya\", \"Vivaan\"]\n\n# Your code here",
+        hint:       "Use: \"Aarav\" in students  -  Python will say True or False"
+      }
+    ],
+
+    // ─── Phase 8: Reflection ────────────────────────────
+    reflection: {
+      questions: [
+        "On Wednesday Arjun had three sheets. On Friday he had a pile. What is the difference between a pile and a list?",
+        "If you had to explain Lists to a friend who has never coded, what would you say?",
+        "In your own life, where do you already keep a list? What would happen if you had to remember all of it in your head instead?",
+        "Why did the teacher say 'the list' and not 'the sheets'?"
+      ],
+      confidenceSurvey: [
+        {
+          conceptId:    "obj-1",
+          conceptLabel: "Recognising when many things belong together",
+          prompt:       "How confident do you feel about knowing when to group things under one name?"
+        },
+        {
+          conceptId:    "obj-2",
+          conceptLabel: "Why multiple variables stop working",
+          prompt:       "How confident are you about explaining why separate variables break at scale?"
+        },
+        {
+          conceptId:    "obj-3",
+          conceptLabel: "Python List",
+          prompt:       "How confident do you feel about writing your first Python List?"
+        }
+      ],
+      optional: false
+    }
   }
 ];
 
