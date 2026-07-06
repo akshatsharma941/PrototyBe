@@ -68,47 +68,28 @@ const RightPanel = ({ pycratesStatus }) => {
       
       {/* IDE Toolbar */}
       <div style={{ 
-        padding: '0.5rem 1rem', 
-        background: '#2d2d2d', 
+        padding: '0.75rem 1.25rem', 
+        background: 'var(--bg-secondary)', 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        borderBottom: '1px solid #404040'
+        borderBottom: '1px solid var(--glass-border)'
       }}>
-        <div style={{ fontSize: '0.85rem', color: '#ccc' }}>solution.py</div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b' }} />
+          solution.py
+        </div>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button 
             onClick={handleRun}
-            style={{ 
-              background: 'transparent', 
-              border: '1px solid #404040', 
-              color: '#ccc', 
-              padding: '0.4rem 0.75rem', 
-              borderRadius: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              cursor: 'pointer',
-              fontSize: '0.85rem'
-            }}
+            className="btn-ide-run"
           >
             <Play size={14} /> Run Code
           </button>
           <button 
+            onClick={handleSubmit}
             disabled={!isReady}
-            style={{ 
-              background: isReady ? 'var(--success)' : '#404040', 
-              border: 'none', 
-              color: isReady ? 'white' : '#888', 
-              padding: '0.4rem 1rem', 
-              borderRadius: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              cursor: isReady ? 'pointer' : 'not-allowed',
-              fontSize: '0.85rem',
-              fontWeight: 600
-            }}
+            className="btn-ide-submit"
           >
             <UploadCloud size={14} /> Submit
           </button>
@@ -137,60 +118,69 @@ const RightPanel = ({ pycratesStatus }) => {
         onMouseDown={startResize}
         style={{ 
           height: '6px', 
-          background: '#333', 
+          background: 'var(--bg-primary)', 
           cursor: 'row-resize',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderTop: '1px solid #404040',
-          borderBottom: '1px solid #404040'
+          borderTop: '1px solid var(--glass-border)',
+          borderBottom: '1px solid var(--glass-border)'
         }}
       >
-        <div style={{ width: '40px', height: '2px', background: '#555', borderRadius: '2px' }} />
+        <div style={{ width: '40px', height: '2px', background: 'var(--text-secondary)', borderRadius: '2px', opacity: 0.5 }} />
       </div>
 
       {/* Test Cases Area */}
       <div style={{ 
-        height: isTestAreaOpen ? `${testAreaHeight}px` : '40px',
-        background: '#2d2d2d',
+        height: isTestAreaOpen ? `${testAreaHeight}px` : '48px',
+        background: 'var(--bg-secondary)',
         display: 'flex',
         flexDirection: 'column',
-        transition: isTestAreaOpen ? 'none' : 'height 0.2s ease'
+        transition: isTestAreaOpen ? 'none' : 'height 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
         <div 
           onClick={() => setIsTestAreaOpen(!isTestAreaOpen)}
           style={{ 
-            padding: '0.5rem 1rem', 
+            padding: '0.75rem 1.5rem', 
             display: 'flex', 
             justifyContent: 'space-between',
             alignItems: 'center',
             cursor: 'pointer',
-            borderBottom: '1px solid #404040',
-            userSelect: 'none'
+            borderBottom: isTestAreaOpen ? '1px solid var(--glass-border)' : 'none',
+            userSelect: 'none',
+            background: 'rgba(255, 255, 255, 0.02)'
           }}
         >
-          <span style={{ fontSize: '0.85rem', color: '#ccc', fontWeight: 600 }}>Test Cases</span>
-          {isTestAreaOpen ? <ChevronDown size={16} color="#aaa" /> : <ChevronUp size={16} color="#aaa" />}
+          <span style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600, letterSpacing: '0.5px' }}>Test Cases</span>
+          {isTestAreaOpen ? <ChevronDown size={18} color="var(--text-secondary)" /> : <ChevronUp size={18} color="var(--text-secondary)" />}
         </div>
         
         {isTestAreaOpen && (
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', background: 'var(--bg-primary)' }}>
             {!testResults ? (
-              <div style={{ color: '#888', fontSize: '0.85rem' }}>Run code to see test results.</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontStyle: 'italic', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                Click "Run Code" to execute tests against your logic.
+              </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {testResults.map((tr, idx) => (
-                  <div key={idx} style={{ background: '#1e1e1e', padding: '1rem', borderRadius: '6px', border: '1px solid #404040' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                      {tr.passed ? <CheckCircle size={16} color="var(--success)" /> : <XCircle size={16} color="#ef4444" />}
-                      <span style={{ color: tr.passed ? 'var(--success)' : '#ef4444', fontWeight: 600, fontSize: '0.85rem' }}>
-                        Test Case {idx + 1}
+                  <div key={idx} style={{ 
+                    background: 'var(--bg-secondary)', 
+                    padding: '1.25rem', 
+                    borderRadius: '8px', 
+                    border: `1px solid ${tr.passed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                    boxShadow: 'var(--shadow-sm)'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>
+                      {tr.passed ? <CheckCircle size={18} color="var(--success)" /> : <XCircle size={18} color="#ef4444" />}
+                      <span style={{ color: tr.passed ? 'var(--success)' : '#ef4444', fontWeight: 600, fontSize: '0.95rem' }}>
+                        Test Case {idx + 1} {tr.passed ? 'Passed' : 'Failed'}
                       </span>
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: '#ccc', display: 'grid', gridTemplateColumns: '80px 1fr', gap: '0.5rem', marginTop: '0.5rem' }}>
-                      <span style={{ color: '#888' }}>Input:</span> <span>{tr.input}</span>
-                      <span style={{ color: '#888' }}>Expected:</span> <span>{tr.expected}</span>
-                      <span style={{ color: '#888' }}>Output:</span> <span>{tr.output}</span>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-primary)', display: 'grid', gridTemplateColumns: '90px 1fr', gap: '0.75rem', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <span style={{ color: 'var(--text-secondary)' }}>Input:</span> <span>{tr.input}</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Expected:</span> <span>{tr.expected}</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Output:</span> <span style={{ color: tr.passed ? 'var(--success)' : '#ef4444' }}>{tr.output}</span>
                     </div>
                   </div>
                 ))}
