@@ -15,7 +15,11 @@ export const mockLevels = [
         ],
         possibleConcepts: ["variables", "assignment", "integers"],
         difficulty: "Easy",
-        xpReward: 100
+        xpReward: 100,
+        testCases: [
+          { input: '', expectedOutput: '0' },
+          { input: '', expectedOutput: '1' }
+        ]
       },
       {
         id: "mis-1-2",

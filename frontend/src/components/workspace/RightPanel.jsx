@@ -40,11 +40,75 @@ const RightPanel = ({ pycratesStatus }) => {
 
   const [testResults, setTestResults] = useState(null);
 
-  const handleRun = () => {
-    setTestResults([
-      { input: 'Initial state', expected: '0', output: '0', passed: true },
-      { input: 'Add 1 cup', expected: '1', output: '1', passed: true }
-    ]);
+  const [isExecuting, setIsExecuting] = useState(false);
+
+  const handleRun = async () => {
+    setIsExecuting(true);
+    try {
+      const missionData = mockLevels.flatMap(l => l.missions).find(m => m.id === id);
+      const defaultTcs = [
+        { input: '', expectedOutput: '0' },
+        { input: '', expectedOutput: '1' }
+      ];
+      const tcs = missionData?.testCases || defaultTcs;
+
+      const results = [];
+      for (let i = 0; i < tcs.length; i++) {
+        const tc = tcs[i];
+        
+        let codeToRun = code;
+        // Simple hack to simulate state change across tests for this specific mission if needed
+        if (id === 'mis-1-1' && tc.expectedOutput === '1') {
+          // If they didn't write print statements, we can inject them or just run as is
+          // but for general execution, just send the code.
+        }
+
+        const response = await fetch('http://localhost:5000/api/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            language: 'python',
+            files: [{ content: codeToRun }],
+            stdin: tc.input
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (!data.run || data.run.code !== 0 || data.run.stderr) {
+           results.push({
+             input: tc.input || 'None',
+             expected: tc.expectedOutput,
+             output: data.run?.stderr?.trim() || 'Execution Error',
+             passed: false
+           });
+        } else {
+           const actualOutput = data.run.output.trim();
+           // For mis-1-1, maybe we just want to ensure it runs without error, or actually matches
+           // Since it's a basic tracking mission, let's strictly compare output if expectedOutput is provided
+           let passed = false;
+           if (tc.expectedOutput) {
+              passed = actualOutput === tc.expectedOutput;
+           } else {
+              passed = true;
+           }
+
+           results.push({
+             input: tc.input || 'None',
+             expected: tc.expectedOutput || 'Success',
+             output: actualOutput || '(No output)',
+             passed: passed
+           });
+        }
+      }
+      
+      setTestResults(results);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to connect to execution server. Is the backend running?');
+    } finally {
+      setIsExecuting(false);
+    }
   };
 
   const handleSubmit = () => {
@@ -82,9 +146,11 @@ const RightPanel = ({ pycratesStatus }) => {
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button 
             onClick={handleRun}
+            disabled={isExecuting}
             className="btn-ide-run"
+            style={{ opacity: isExecuting ? 0.7 : 1, cursor: isExecuting ? 'wait' : 'pointer' }}
           >
-            <Play size={14} /> Run Code
+            <Play size={14} /> {isExecuting ? 'Running...' : 'Run Code'}
           </button>
           <button 
             onClick={handleSubmit}
