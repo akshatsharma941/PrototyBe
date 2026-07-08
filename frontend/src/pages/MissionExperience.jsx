@@ -5,15 +5,20 @@ import ProgressTracker from '../components/workspace/ProgressTracker';
 import LeftPanel from '../components/workspace/LeftPanel';
 import RightPanel from '../components/workspace/RightPanel';
 
+import { mockLevels } from '../data/mockData';
+
 const MissionExperience = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // Mock mission fetching
+  // Find the level and mission from mock data
+  const level = mockLevels.find(l => l.missions.some(m => m.id === id));
+  const missionData = level?.missions.find(m => m.id === id);
+  
   const mission = {
     id: id,
-    title: 'The Coffee Shop Tracker',
-    story: 'You run a small coffee shop. You need to keep track of how many cups of coffee you sell today to calculate your daily revenue. How will you remember and update this count?'
+    title: missionData?.title || 'Unknown Mission',
+    story: missionData?.description || 'Mission details not found.'
   };
 
   const [leftWidth, setLeftWidth] = useState(
@@ -56,7 +61,7 @@ const MissionExperience = () => {
       <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--glass-border)' }}>
         <div style={{ paddingLeft: '1rem', borderRight: '1px solid var(--glass-border)', paddingRight: '1.5rem', display: 'flex', alignItems: 'center' }}>
           <button 
-            onClick={() => navigate('/levels')}
+            onClick={() => navigate(`/level/${level?.id}/missions`)}
             className="btn-back"
           >
             <ArrowLeft size={16} /> Back
