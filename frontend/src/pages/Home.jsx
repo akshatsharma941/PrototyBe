@@ -13,14 +13,28 @@ const Home = () => {
       height: '100%', 
       overflowY: 'auto', 
       overflowX: 'hidden',
-      background: 'radial-gradient(circle at top, rgba(139, 92, 246, 0.05), transparent 60%)'
+      background: 'var(--bg-primary)',
+      position: 'relative'
     }}>
-      <HeroSection />
-      <WhyPyBeSection />
-      <HowItWorksSection />
-      <ComparisonSection />
-      <AiCoachSection />
-      <FinalCtaSection />
+      {/* Ambient Background Orbs */}
+      <div className="ambient-orb" style={{ 
+        top: '-10%', left: '-5%', width: '40vw', height: '40vw', background: 'rgba(139, 92, 246, 0.15)' 
+      }} />
+      <div className="ambient-orb" style={{ 
+        top: '40%', right: '-10%', width: '30vw', height: '30vw', background: 'rgba(59, 130, 246, 0.12)', animationDelay: '-5s' 
+      }} />
+      <div className="ambient-orb" style={{ 
+        bottom: '-5%', left: '10%', width: '35vw', height: '35vw', background: 'rgba(16, 185, 129, 0.08)', animationDelay: '-2s' 
+      }} />
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <HeroSection />
+        <WhyPyBeSection />
+        <HowItWorksSection />
+        <ComparisonSection />
+        <AiCoachSection />
+        <FinalCtaSection />
+      </div>
     </div>
   );
 };

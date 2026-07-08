@@ -1,15 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Hexagon } from 'lucide-react';
+import Logo from '../common/Logo';
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section style={{ textAlign: 'center', padding: '4rem 1rem 6rem', maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '3rem' }}>
-        <Hexagon size={36} color="var(--accent-primary)" fill="rgba(139, 92, 246, 0.2)" />
-        <span style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '1px' }}>PyBe</span>
+    <section style={{ textAlign: 'center', padding: '6rem 1rem 6rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '3rem' }}>
+        <Logo size="large" />
       </div>
 
       <h1 style={{ 
