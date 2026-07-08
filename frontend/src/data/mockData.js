@@ -19,7 +19,9 @@ export const mockLevels = [
         testCases: [
           { input: '', expectedOutput: '0' },
           { input: '', expectedOutput: '1' }
-        ]
+        ],
+        lessonSummary: "You successfully tracked state by assigning a changing value to a variable.",
+        intuitionBuilt: "Memory is just a named box where you can update the contents over time."
       },
       {
         id: "mis-1-2",
@@ -31,7 +33,9 @@ export const mockLevels = [
         ],
         possibleConcepts: ["variables", "strings"],
         difficulty: "Easy",
-        xpReward: 120
+        xpReward: 120,
+        lessonSummary: "You stored and retrieved text data efficiently.",
+        intuitionBuilt: "Strings allow you to persist and reference textual information by name."
       }
     ]
   },
@@ -51,7 +55,9 @@ export const mockLevels = [
         ],
         possibleConcepts: ["conditionals", "if-else", "booleans"],
         difficulty: "Easy",
-        xpReward: 150
+        xpReward: 150,
+        lessonSummary: "You implemented logic that diverges based on a specific boolean condition.",
+        intuitionBuilt: "Programs can make decisions and choose different paths based on true/false evaluations."
       },
       {
         id: "mis-2-2",
@@ -63,7 +69,9 @@ export const mockLevels = [
         ],
         possibleConcepts: ["conditionals", "math operators", "if-else"],
         difficulty: "Medium",
-        xpReward: 200
+        xpReward: 200,
+        lessonSummary: "You combined conditional logic with mathematical operations.",
+        intuitionBuilt: "You can conditionally manipulate data values based on real-world rules."
       }
     ]
   },
@@ -83,7 +91,9 @@ export const mockLevels = [
         ],
         possibleConcepts: ["loops", "iteration", "while loops"],
         difficulty: "Medium",
-        xpReward: 250
+        xpReward: 250,
+        lessonSummary: "You executed a repetitive action with a clear stopping condition.",
+        intuitionBuilt: "Instead of repeating code, you can define a loop that continues until a condition is met."
       },
       {
         id: "mis-3-2",
@@ -95,7 +105,9 @@ export const mockLevels = [
         ],
         possibleConcepts: ["for loops", "range", "iteration"],
         difficulty: "Medium",
-        xpReward: 300
+        xpReward: 300,
+        lessonSummary: "You systematically iterated over a defined range of possibilities.",
+        intuitionBuilt: "Iteration allows you to easily walk through sequences without manual intervention."
       }
     ]
   }

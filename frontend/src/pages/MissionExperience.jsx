@@ -28,6 +28,11 @@ const MissionExperience = () => {
   const [pycratesStatus, setPycratesStatus] = useState('Guiding Reasoning');
   const [currentStage, setCurrentStage] = useState('Mission Brief');
 
+  useEffect(() => {
+    setPycratesStatus('Guiding Reasoning');
+    setCurrentStage('Mission Brief');
+  }, [id]);
+
   const containerRef = useRef(null);
 
   const startResize = (e) => {
@@ -55,7 +60,7 @@ const MissionExperience = () => {
   }, [leftWidth]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+    <div key={id} style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       
       {/* Top Bar */}
       <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--glass-border)' }}>
