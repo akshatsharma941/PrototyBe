@@ -32,9 +32,9 @@ const LevelSelection = () => {
           width: '100%', 
           marginBottom: '3rem', 
           display: 'flex', 
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '1rem 2rem',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          padding: '1.5rem 2rem',
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid var(--glass-border)',
           borderRadius: '16px',
@@ -50,13 +50,15 @@ const LevelSelection = () => {
             </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '0.5rem', borderRadius: '50%' }}>
+          <div style={{ width: '100%', height: '1px', background: 'var(--glass-border)' }} />
+          
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '0.5rem', borderRadius: '50%', marginTop: '0.2rem' }}>
               <Compass size={20} color="#3b82f6" />
             </div>
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Discovered Concepts</div>
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                 {discoveredConcepts.length === 0 ? (
                   <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>None yet</span>
                 ) : (
