@@ -218,7 +218,7 @@ const Tutor = () => {
             defaultLanguage="python"
             theme="vs-dark"
             value={code}
-            onChange={(val) => setCode(val)}
+            onChange={(val) => setCode(val ?? '# Write your Python code here...')}
             options={{
               minimap: { enabled: false },
               fontSize: 15,
