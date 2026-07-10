@@ -8,7 +8,13 @@ const CaseStudy = require('../models/CaseStudy');
 const tutorEngine = require('../tutorEngine');
 const { getMisconception, getAllMisconceptions } = require('../misconceptions/library-index');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+let genAI = null;
+const getClient = () => {
+  if (genAI) return genAI;
+  if (!process.env.GEMINI_API_KEY) return null;
+  genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  return genAI;
+};
 
 // ─── Phase Order Map ─────────────────────────────────────
 // Derived from tutorEngine phases, in order.
@@ -107,6 +113,7 @@ exports.submitExplanation = async (req, res) => {
       return res.status(404).json({ error: 'Case study not found' });
     }
 
+<<<<<<< HEAD
     // 2. Determine current phase
     const activePhase = currentPhase || PHASE_ORDER[0];
     const phaseConfig = tutorEngine.phases[activePhase];
@@ -122,6 +129,15 @@ exports.submitExplanation = async (req, res) => {
     // 4. Call Gemini
     const model = genAI.getGenerativeModel({
       model: tutorEngine.engine.model,
+=======
+    const client = getClient();
+    if (!client) {
+      return res.status(503).json({ error: 'AI Tutor is not configured. Missing GEMINI_API_KEY.' });
+    }
+
+    const model = client.getGenerativeModel({
+      model: "gemini-1.5-flash",
+>>>>>>> 4cbb167c049841feb1ec8725f41a0d9e7df538b7
       generationConfig: {
         responseMimeType: "application/json",
         temperature: tutorEngine.engine.temperature

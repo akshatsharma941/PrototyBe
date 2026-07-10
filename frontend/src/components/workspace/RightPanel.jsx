@@ -14,8 +14,10 @@ const RightPanel = ({ pycratesStatus }) => {
   const [testAreaHeight, setTestAreaHeight] = useState(250);
   const [isTestAreaOpen, setIsTestAreaOpen] = useState(true);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [testResults, setTestResults] = useState(null);
+  const [isExecuting, setIsExecuting] = useState(false);
   const isReady = pycratesStatus === 'Ready for Coding' || pycratesStatus === 'Complete';
-  
+
   // Calculate next mission ID
   let nextMissionId = null;
   let currentMissionData = null;
@@ -32,7 +34,7 @@ const RightPanel = ({ pycratesStatus }) => {
       break;
     }
   }
-  
+
   const dividerRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -56,10 +58,6 @@ const RightPanel = ({ pycratesStatus }) => {
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
   };
-
-  const [testResults, setTestResults] = useState(null);
-
-  const [isExecuting, setIsExecuting] = useState(false);
 
   const handleRun = async () => {
     setIsExecuting(true);
@@ -185,7 +183,7 @@ const RightPanel = ({ pycratesStatus }) => {
           defaultLanguage="python"
           theme="vs-dark"
           value={code}
-          onChange={setCode}
+          onChange={(val) => setCode(val ?? '')}
           options={{
             minimap: { enabled: false },
             fontSize: 14,

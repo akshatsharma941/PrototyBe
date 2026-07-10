@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 // the page became backend-driven (case studies are fetched from the API).
 // Upstream PR #2 (9f790a3) added `ArrowLeft` + `Logo` for the new header.
 // We keep both intents: backend-driven loading AND the new header chrome.
+import { mockLevels } from '../data/mockData';
+import { Lock, Unlock, CheckCircle, Flag, Zap, Compass, ArrowLeft, X } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
 import { Unlock, Flag, Zap, Compass, ArrowLeft } from 'lucide-react';
 import Logo from '../components/common/Logo';
@@ -16,6 +18,25 @@ const API_BASE = 'http://localhost:5000';
 const LevelSelection = () => {
   const navigate = useNavigate();
   const { xp, discoveredConcepts, getLevelProgress } = useProgress();
+  const [lockedPopup, setLockedPopup] = useState(null);
+
+  useEffect(() => {
+    if (!lockedPopup) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setLockedPopup(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lockedPopup]);
+
+  const handleCardClick = (level) => {
+    const { isUnlocked } = getLevelProgress(level.levelNumber);
+    if (isUnlocked) {
+      navigate(`/level/${level.id}/missions`);
+    } else {
+      setLockedPopup(level);
+    }
+  };
 
   // Backend-driven case studies. Until the load finishes we render an empty
   // list. While loading or on error we show a small inline status message
@@ -71,63 +92,71 @@ const LevelSelection = () => {
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <button 
+          <button
             onClick={() => navigate('/')}
             className="btn-back"
           >
             <ArrowLeft size={16} /> Back to Home
           </button>
-          <Logo size="small" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Logo size="small" />
+            {/* XP — pinned to top right */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.5rem 1rem',
+                background: 'rgba(245, 158, 11, 0.1)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                borderRadius: '999px',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                boxShadow: 'var(--shadow-sm)'
+              }}
+            >
+              <Zap size={16} color="#f59e0b" fill="#f59e0b" />
+              <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.5px' }}>
+                {xp} XP
+              </span>
+            </div>
+          </div>
         </div>
-        {/* Profile Progress Bar */}
-        <div style={{ 
-          width: '100%', 
-          marginBottom: '3rem', 
-          display: 'flex', 
-          flexDirection: 'column',
-          gap: '1.5rem',
+        {/* Discovered Concepts (XP moved to top-right) */}
+        <div style={{
+          width: '100%',
+          marginBottom: '3rem',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '0.75rem',
           padding: '1.5rem 2rem',
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid var(--glass-border)',
           borderRadius: '16px',
           backdropFilter: 'blur(10px)'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '0.5rem', borderRadius: '50%' }}>
-              <Zap size={20} color="#f59e0b" />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Total XP</div>
-              <div style={{ fontSize: '1.25rem', color: '#f59e0b', fontWeight: 700 }}>{xp}</div>
-            </div>
+          <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '0.5rem', borderRadius: '50%', marginTop: '0.2rem' }}>
+            <Compass size={20} color="#3b82f6" />
           </div>
-          
-          <div style={{ width: '100%', height: '1px', background: 'var(--glass-border)' }} />
-          
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-            <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '0.5rem', borderRadius: '50%', marginTop: '0.2rem' }}>
-              <Compass size={20} color="#3b82f6" />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Discovered Concepts</div>
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-                {discoveredConcepts.length === 0 ? (
-                  <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>None yet</span>
-                ) : (
-                  discoveredConcepts.map(concept => (
-                    <span key={concept} style={{ 
-                      background: 'rgba(59, 130, 246, 0.15)', 
-                      color: '#60a5fa', 
-                      padding: '0.2rem 0.6rem', 
-                      borderRadius: '12px', 
-                      fontSize: '0.8rem',
-                      fontWeight: 500
-                    }}>
-                      {concept}
-                    </span>
-                  ))
-                )}
-              </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Discovered Concepts</div>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+              {discoveredConcepts.length === 0 ? (
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>None yet</span>
+              ) : (
+                discoveredConcepts.map(concept => (
+                  <span key={concept} style={{
+                    background: 'rgba(59, 130, 246, 0.15)',
+                    color: '#60a5fa',
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '12px',
+                    fontSize: '0.8rem',
+                    fontWeight: 500
+                  }}>
+                    {concept}
+                  </span>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -148,18 +177,24 @@ const LevelSelection = () => {
           </p>
         </header>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', width: '100%', position: 'relative' }}>
-          {/* Vertical line connecting nodes */}
-          <div style={{
-            position: 'absolute',
-            top: '40px',
-            bottom: '40px',
-            left: '30px',
-            width: '4px',
-            background: 'var(--glass-border)',
-            zIndex: 0
-          }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', position: 'relative' }}>
+          {/* Vertical line connecting nodes — centered on the 60px icons (left: 30px = 60/2) */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              top: '30px',
+              bottom: '30px',
+              left: '30px',
+              width: '3px',
+              background: 'linear-gradient(180deg, var(--glass-border) 0%, rgba(139, 92, 246, 0.25) 50%, var(--glass-border) 100%)',
+              borderRadius: '2px',
+              transform: 'translateX(-1.5px)',
+              zIndex: 0
+            }}
+          />
 
+<<<<<<< HEAD
           {/* Click target: each fetched case study. While we still have the
               old Level id scheme inside ProgressContext, every card reports
               as "Level 1" (always unlocked). Once Levels support lands, this
@@ -246,8 +281,117 @@ const LevelSelection = () => {
                           background: 'linear-gradient(90deg, var(--accent-secondary), var(--accent-primary))',
                           borderRadius: '4px'
                         }} />
+=======
+          {mockLevels.map((level) => {
+            const { percent, isUnlocked } = getLevelProgress(level.levelNumber);
+            const isCompleted = percent === 100;
+
+            return (
+              <div
+                key={level.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'stretch',
+                  gap: '1.5rem',
+                  position: 'relative',
+                  zIndex: 1
+                }}
+              >
+                {/* Icon column — fixed width so every node lines up with the vertical line */}
+                <div
+                  style={{
+                    width: '60px',
+                    flexShrink: 0,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    position: 'relative'
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '60px',
+                      height: '60px',
+                      borderRadius: '50%',
+                      background: isCompleted
+                        ? 'rgba(16, 185, 129, 0.2)'
+                        : (isUnlocked ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-primary)'),
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: `2px solid ${isUnlocked ? 'var(--accent-secondary)' : 'var(--glass-border)'}`,
+                      boxShadow: isUnlocked ? 'var(--shadow-md)' : 'none',
+                      transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                      position: 'relative',
+                      zIndex: 2
+                    }}
+                  >
+                    {isCompleted ? (
+                      <CheckCircle size={28} color="var(--success)" />
+                    ) : isUnlocked ? (
+                      <Unlock size={28} color="var(--accent-secondary)" />
+                    ) : (
+                      <Lock size={28} color="var(--text-secondary)" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Card */}
+                <div
+                  className={`glass-panel ${!isUnlocked ? 'ide-disabled' : ''}`}
+                  style={{
+                    flex: 1,
+                    padding: '2rem',
+                    display: 'flex',
+                    gap: '2rem',
+                    alignItems: 'center',
+                    cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease',
+                    opacity: isUnlocked ? 1 : 0.6,
+                    marginLeft: 0,
+                    marginRight: 0
+                  }}
+                  onClick={() => handleCardClick(level)}
+                  onMouseEnter={(e) => {
+                    if (isUnlocked) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (isUnlocked) {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                    }
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem' }}>
+                      <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)' }}>Level {level.levelNumber}: {level.title}</h2>
+                    </div>
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1rem' }}>
+                      {level.description}
+                    </p>
+
+                    <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', fontSize: '0.9rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
+                        <Flag size={16} color="var(--accent-secondary)" />
+                        <span>{level.missions.length} Missions</span>
                       </div>
-                      <span style={{ color: 'var(--text-primary)', fontWeight: 500, minWidth: '40px' }}>{percent}%</span>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '200px' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Progress:</span>
+                        <div style={{ flex: 1, height: '8px', background: 'var(--bg-primary)', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{
+                            height: '100%',
+                            width: `${percent}%`,
+                            background: isCompleted ? 'var(--success)' : 'linear-gradient(90deg, var(--accent-secondary), var(--accent-primary))',
+                            borderRadius: '4px',
+                            transition: 'width 0.4s ease'
+                          }} />
+                        </div>
+                        <span style={{ color: 'var(--text-primary)', fontWeight: 500, minWidth: '40px' }}>{percent}%</span>
+>>>>>>> 4cbb167c049841feb1ec8725f41a0d9e7df538b7
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -256,6 +400,137 @@ const LevelSelection = () => {
           })}
         </div>
       </div>
+
+      {lockedPopup && (
+        <div
+          onClick={() => setLockedPopup(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.6)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="locked-modal-title"
+            className="glass-panel"
+            style={{
+              width: '100%',
+              maxWidth: '440px',
+              padding: '2.5rem 2rem 2rem',
+              borderRadius: '20px',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(239, 68, 68, 0.15)',
+              textAlign: 'center',
+              position: 'relative',
+              background: 'var(--glass-bg)'
+            }}
+          >
+            <button
+              onClick={() => setLockedPopup(null)}
+              aria-label="Close"
+              style={{
+                position: 'absolute',
+                top: '0.75rem',
+                right: '0.75rem',
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                padding: '0.4rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background 0.2s ease, color 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+                e.currentTarget.style.color = 'var(--text-primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--text-secondary)';
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <div
+              style={{
+                width: '72px',
+                height: '72px',
+                borderRadius: '50%',
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1.25rem',
+                boxShadow: '0 0 24px rgba(239, 68, 68, 0.15)'
+              }}
+            >
+              <Lock size={32} color="#ef4444" />
+            </div>
+
+            <h2
+              id="locked-modal-title"
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                marginBottom: '0.5rem'
+              }}
+            >
+              Level Locked
+            </h2>
+
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '0.5rem' }}>
+              <strong style={{ color: 'var(--text-primary)' }}>Level {lockedPopup.levelNumber}: {lockedPopup.title}</strong> is locked.
+            </p>
+
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.75rem' }}>
+              Complete the previous level to unlock this level.
+            </p>
+
+            <button
+              onClick={() => setLockedPopup(null)}
+              style={{
+                background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                color: 'white',
+                border: 'none',
+                padding: '0.75rem 2rem',
+                borderRadius: '10px',
+                fontWeight: 600,
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                transition: 'transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease',
+                boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(59, 130, 246, 0.3)';
+              }}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
