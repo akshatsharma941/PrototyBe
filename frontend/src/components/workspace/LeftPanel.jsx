@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Book, ChevronDown, ChevronUp, CheckCircle, Bot } from 'lucide-react';
+import MessageSpeaker from './MessageSpeaker';
 
 const LeftPanel = ({ mission, pycratesStatus, setPycratesStatus, currentStage, setCurrentStage }) => {
   const [messages, setMessages] = useState([
@@ -125,15 +126,44 @@ const LeftPanel = ({ mission, pycratesStatus, setPycratesStatus, currentStage, s
               );
             }
 
+            if (msg.role === 'assistant') {
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '0.4rem',
+                    alignSelf: 'flex-start',
+                    maxWidth: '85%'
+                  }}
+                >
+                  <div style={{
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--glass-border)',
+                    padding: '1rem',
+                    borderRadius: '12px',
+                    borderTopLeftRadius: '2px',
+                    fontSize: '0.95rem',
+                    lineHeight: 1.5,
+                    flex: 1,
+                    minWidth: 0
+                  }}>
+                    {msg.content}
+                  </div>
+                  <MessageSpeaker id={`chat-msg-${idx}`} text={msg.content} />
+                </div>
+              );
+            }
+
             return (
               <div key={idx} style={{ 
-                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                background: msg.role === 'user' ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2))' : 'var(--bg-secondary)',
-                border: `1px solid ${msg.role === 'user' ? 'rgba(139, 92, 246, 0.3)' : 'var(--glass-border)'}`,
+                alignSelf: 'flex-end',
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2))',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
                 padding: '1rem',
                 borderRadius: '12px',
-                borderTopRightRadius: msg.role === 'user' ? '2px' : '12px',
-                borderTopLeftRadius: msg.role === 'assistant' ? '2px' : '12px',
+                borderTopRightRadius: '2px',
                 maxWidth: '85%',
                 fontSize: '0.95rem',
                 lineHeight: 1.5
