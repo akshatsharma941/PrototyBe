@@ -1,4 +1,5 @@
 const CaseStudy = require('../models/CaseStudy');
+const { executePython } = require('../services/pythonExecutionService');
 
 const mapErrorToConceptAndHint = (stderr, requiredConcepts) => {
   if (stderr.includes('SyntaxError')) return { concept: 'syntax error', hint: 'Check your spelling, colons, and punctuation.' };
@@ -36,26 +37,24 @@ exports.evaluateCode = async (req, res) => {
        const tc = caseStudy.testCases[i];
        
        let codeToRun = code;
-       
+
        // Quick prototype replacement to test hidden conditions for beginners who don't know functions
        if (caseStudy.title === "Age Verification System" && tc.input) {
            codeToRun = code.replace(/age\s*=\s*\d+/, `age = ${tc.input}`);
        }
 
-       const { executePython } = require('../services/pythonExecutionService');
        const data = executePython(codeToRun, tc.input || "");
 
-       if (!data.run || data.run.code !== 0 && data.run.stderr.includes('Error')) {
-          // If code execution completely fails due to an error, we can still parse stderr,
-          // but if it's purely a runtime error that prevents output and it has stderr, we proceed below
-          if (!data.run) {
-             failed++;
-             failedTests.push(`Test Case ${i+1}`);
-             if (!hints.find(h => h.concept === 'execution error')) {
-               hints.push({ concept: 'execution error', hint: 'Could not execute your code.' });
-             }
-             continue;
+       // executePython always returns { run: { output, stderr, code } }.
+       // When the python binary itself cannot be spawned (e.g. not installed or wrong command),
+       // `code` is null and both output and stderr are empty.
+       if (!data.run || data.run.code === null) {
+          failed++;
+          failedTests.push(`Test Case ${i+1}`);
+          if (!hints.find(h => h.concept === 'execution error')) {
+            hints.push({ concept: 'execution error', hint: 'Could not execute your code. Make sure Python is installed and available on the server PATH.' });
           }
+          continue;
        }
 
        const output = data.run.output.trim();
