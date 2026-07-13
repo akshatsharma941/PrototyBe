@@ -8,12 +8,11 @@ import FinalCtaSection from '../components/home/FinalCtaSection';
 
 const Home = () => {
   return (
-    <div style={{ 
+    <div className="doodle-bg" style={{ 
       width: '100%', 
       height: '100%', 
       overflowY: 'auto', 
       overflowX: 'hidden',
-      background: 'var(--bg-primary)',
       position: 'relative'
     }}>
       {/* Ambient Background Orbs */}

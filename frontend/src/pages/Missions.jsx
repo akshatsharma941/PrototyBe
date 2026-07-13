@@ -14,7 +14,7 @@ const Missions = () => {
   const topicTitle = levelData ? `Level ${levelData.levelNumber}: ${levelData.title}` : 'Missions';
 
   return (
-    <div style={{ 
+    <div className="doodle-bg" style={{ 
       width: '100%', 
       height: '100%', 
       overflowY: 'auto', 

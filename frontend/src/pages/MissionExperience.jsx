@@ -21,9 +21,12 @@ const MissionExperience = () => {
     story: missionData?.description || 'Mission details not found.'
   };
 
-  const [leftWidth, setLeftWidth] = useState(
-    parseInt(localStorage.getItem('pybe-left-width') || '450')
-  );
+  const [leftWidth, setLeftWidth] = useState(() => {
+    if (typeof window === 'undefined') return 450;
+    const stored = window.localStorage.getItem('pybe-left-width');
+    const parsed = parseInt(stored, 10);
+    return Number.isFinite(parsed) ? parsed : 450;
+  });
   
   const [pycratesStatus, setPycratesStatus] = useState('Guiding Reasoning');
   const [currentStage, setCurrentStage] = useState('Mission Brief');
@@ -56,7 +59,12 @@ const MissionExperience = () => {
   };
 
   useEffect(() => {
-    localStorage.setItem('pybe-left-width', leftWidth.toString());
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem('pybe-left-width', leftWidth.toString());
+    } catch (e) {
+      // Storage may be disabled (private mode, quota, SSR) — non-fatal.
+    }
   }, [leftWidth]);
 
   return (

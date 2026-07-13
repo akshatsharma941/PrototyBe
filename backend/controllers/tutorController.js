@@ -2,7 +2,13 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const CaseStudy = require('../models/CaseStudy');
 const { tutorSystemPrompt } = require('../prompts/tutorPrompt');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+let genAI = null;
+const getClient = () => {
+  if (genAI) return genAI;
+  if (!process.env.GEMINI_API_KEY) return null;
+  genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  return genAI;
+};
 
 exports.submitExplanation = async (req, res) => {
   try {
@@ -17,7 +23,12 @@ exports.submitExplanation = async (req, res) => {
       return res.status(404).json({ error: 'Case study not found' });
     }
 
-    const model = genAI.getGenerativeModel({
+    const client = getClient();
+    if (!client) {
+      return res.status(503).json({ error: 'AI Tutor is not configured. Missing GEMINI_API_KEY.' });
+    }
+
+    const model = client.getGenerativeModel({
       model: "gemini-1.5-flash",
       generationConfig: {
         responseMimeType: "application/json"
