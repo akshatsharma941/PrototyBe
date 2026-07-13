@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Bot } from 'lucide-react';
+import { Bot, Volume2 } from 'lucide-react';
+import SentenceCard from '../components/case-study/SentenceCard';
+import { mockSentences } from '../data/sentences';
 
 const CaseStudy = () => {
   const { id } = useParams();
@@ -45,6 +47,20 @@ const CaseStudy = () => {
               <li key={idx} style={{ marginBottom: '0.5rem' }}>{concept}</li>
             ))}
           </ul>
+        </div>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h4 style={{ color: 'var(--text-secondary)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Volume2 size={16} /> Listen &amp; Learn
+          </h4>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            Tap the speaker icon on any card to hear it read aloud. Only one sentence plays at a time.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {mockSentences.map((sentence) => (
+              <SentenceCard key={sentence.id} sentence={sentence} />
+            ))}
+          </div>
         </div>
 
         <div style={{ textAlign: 'center' }}>
