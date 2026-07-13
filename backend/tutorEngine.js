@@ -8,10 +8,11 @@ module.exports = {
   // ─── Engine Config ─────────────────────────────────────
   engine: {
     version:        1,
-    // gemini-1.5-flash retired (404). gemini-2.0-flash / -lite / -pro are
-    // returning 429 quota-exceeded on this key, but gemini-2.5-flash still
-    // has free-tier headroom. Use it.
-    model:          "gemini-2.5-flash",
+    // gemini-2.5-flash retired for new API keys (404 with AQ.* keys).
+    // gemini-3.5-flash is Google's recommended replacement (May 2026).
+    // fallbackModel used when the primary returns 404 or 503.
+    model:          "gemini-3.5-flash",
+    fallbackModel:  "gemini-3.1-flash-lite",
     temperature:    0.7,
     responseFormat: "json",
     timeout:        30000
@@ -56,7 +57,14 @@ module.exports = {
       description:  "The moment the learner's model breaks",
       mustAdvance:  true,
       minTurns:     1,
-      forcePause:   true
+      forcePause:   true,
+      // The trigger statement lands as a TWO-BEAT moment:
+      //   beat 1 - surface the statement, wait for the learner to acknowledge
+      //   beat 2 - validate their reaction, bridge into discovery
+      // The controller will NOT advance to discovery until the learner has
+      // produced a substantive reaction (not just "yes" / "wow" / "ok").
+      // See minAcknowledgmentWords in transitions config below.
+      requiresAcknowledgment: true
     },
 
     discovery: {
@@ -119,18 +127,43 @@ module.exports = {
     },
 
     cognitiveTrigger_to_discovery: {
-      check: "learner_acknowledged_the_problem"
-      // Learner said something like "that's too many", "I can't manage that", "this is impossible"
+      check: "learner_acknowledged_the_problem",
+      // v1.1: The trigger statement is a pedagogical beat, not a passing
+      // question. We require BOTH a scale signal AND a minimum word count
+      // so the learner is forced to actually sit with the discomfort
+      // instead of just typing "ok" to advance. The Socratic contract
+      // depends on this moment landing.
+      conditions: [
+        "learner_response_contains_scale_signal",
+        "learner_response_acknowledges_discomfort",
+        "minimum_acknowledgment_length"
+      ],
+      minAcknowledgmentWords: 6
     },
 
     discovery_to_programmingMapping: {
-      check: "learner_expressed_grouping_intent"
-      // Learner said yes, group, together, same name, same place, etc.
+      check: "learner_expressed_grouping_intent",
+      // v1.1: discovery is where the learner articulates the insight.
+      // A single-word "yes" or "yeah" is a wave-through, not articulation.
+      // Require the grouping vocabulary AND a minimum word count so the
+      // learner has to express the idea in their own words.
+      conditions: [
+        "learner_response_contains_grouping_signal",
+        "minimum_articulation_length"
+      ],
+      minArticulationWords: 5
     },
 
     programmingMapping_to_practice: {
-      check: "learner_acknowledged_understanding"
-      // Learner said okay, I see, that makes sense, etc.
+      check: "learner_acknowledged_understanding",
+      // v1.1: same fix as discovery. "okay" / "i see" are acks, not
+      // articulation. Require >= 5 words so the learner has to say
+      // something real about how the syntax maps to their insight.
+      conditions: [
+        "learner_response_contains_understanding_signal",
+        "minimum_articulation_length"
+      ],
+      minArticulationWords: 5
     },
 
     practice_to_reflection: {
@@ -178,10 +211,16 @@ module.exports = {
     ],
 
     fallback: {
-      error:     "I had trouble processing that. Could you try rephrasing?",
-      timeout:   "I ran out of time thinking about that. Let's continue.",
-      unknown:   "I'm not sure I understood that correctly. Could you say it differently?",
-      rateLimit: "The AI tutor is currently busy (rate-limit reached). Please wait a few seconds and try again — your last message is still saved."
+      // Persona-voice fallback messages. These are shown to the LEARNER
+      // when something technical goes wrong (rate-limit, timeout, parse
+      // failure). The job of these strings is to make infrastructure
+      // failures invisible to the learner while still letting them continue.
+      // Never leak SDK error codes, "429", "rate-limit", "Gemini", etc.
+      // The learner just needs to feel the tutor paused to think.
+      error:     "Give me a moment — I'm thinking that one through. Could you rephrase what you just said, in your own words?",
+      timeout:   "That one took me a beat longer than I'd like. Let's pick it back up — what were you saying?",
+      unknown:   "Hmm, I want to make sure I'm following you. Could you say that a different way?",
+      rateLimit: "Hold on a sec — I'm gathering my thoughts. Your last message is safe with me. Try sending it again in a moment."
     }
   },
 

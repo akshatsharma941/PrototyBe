@@ -7,12 +7,14 @@ const namingCollision      = require('./naming-collision');
 const scaleFailure         = require('./scale-failure');
 const staticStructure      = require('./static-structure');
 const positionBasedLookup  = require('./position-based-lookup');
+const piecewiseUpdate      = require('./piecewise-update');
 
 const library = {
   "naming-collision":       namingCollision,
   "scale-failure":          scaleFailure,
   "static-structure":       staticStructure,
-  "position-based-lookup":  positionBasedLookup
+  "position-based-lookup":  positionBasedLookup,
+  "piecewise-update":       piecewiseUpdate
 };
 
 function getMisconception(id) {

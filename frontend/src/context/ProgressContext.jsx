@@ -26,16 +26,8 @@ export const ProgressProvider = ({ children }) => {
     const level = mockLevels.find(l => l.levelNumber === levelNum);
     if (!level) return { percent: 0, isUnlocked: false };
 
-    // Level 1 is always unlocked
-    let isUnlocked = levelNum === 1;
-
-    if (levelNum > 1) {
-      const prevLevel = mockLevels.find(l => l.levelNumber === levelNum - 1);
-      if (prevLevel) {
-        const prevMissionsCompleted = prevLevel.missions.every(m => completedMissions.includes(m.id));
-        isUnlocked = prevMissionsCompleted;
-      }
-    }
+    // All levels are unlocked — no sequential dependency
+    let isUnlocked = true;
 
     const totalMissions = level.missions.length;
     const completedCount = level.missions.filter(m => completedMissions.includes(m.id)).length;

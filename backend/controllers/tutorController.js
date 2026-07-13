@@ -113,12 +113,15 @@ exports.submitExplanation = async (req, res) => {
       return res.status(404).json({ error: 'Case study not found' });
     }
 
-<<<<<<< HEAD
-    // 2. Determine current phase
-    const activePhase = currentPhase || PHASE_ORDER[0];
+    // 2. Determine current phase.
+    // PHASE_ORDER is derived once at module load; fallback to the engine's
+    // first phase so a missing/unknown phase doesn't drift to "undefined".
+    const activePhase = currentPhase && tutorEngine.phases[currentPhase]
+      ? currentPhase
+      : PHASE_ORDER[0];
     const phaseConfig = tutorEngine.phases[activePhase];
 
-    // 3. Build the system prompt
+    // 3. Build the system prompt using engine config + active case study.
     const systemPrompt = buildSystemPrompt(
       caseStudy,
       activePhase,
@@ -126,30 +129,48 @@ exports.submitExplanation = async (req, res) => {
       attemptCount
     );
 
-    // 4. Call Gemini
-    const model = genAI.getGenerativeModel({
-      model: tutorEngine.engine.model,
-=======
+    // 4. Resolve the Gemini client lazily — main provided a 503 guard so the
+    // controller fails fast (and clearly) when GEMINI_API_KEY is missing,
+    // instead of throwing inside the SDK later. We deliberately use
+    // getClient() (the top-of-file helper) rather than the lazy `genAI`
+    // global so this path is consistent with the rest of the controller.
     const client = getClient();
     if (!client) {
-      return res.status(503).json({ error: 'AI Tutor is not configured. Missing GEMINI_API_KEY.' });
+      return res.status(503).json({
+        error: 'AI Tutor is not configured. Missing GEMINI_API_KEY.'
+      });
     }
 
-    const model = client.getGenerativeModel({
-      model: "gemini-1.5-flash",
->>>>>>> 4cbb167c049841feb1ec8725f41a0d9e7df538b7
-      generationConfig: {
-        responseMimeType: "application/json",
-        temperature: tutorEngine.engine.temperature
-      }
-    });
-
-    const result = await withRetry(() => model.generateContent([
+    // 5. Call Gemini. Model + temperature come from tutorEngine so content
+    // authors can swap models in one place. Falls back to fallbackModel
+    // when the primary returns 404 (retired) or 503 (overloaded).
+    const genConfig = {
+      responseMimeType: "application/json",
+      temperature: tutorEngine.engine.temperature
+    };
+    const contentParts = [
       { text: systemPrompt },
       { text: `Learner Response: ${studentExplanation}` }
-    ]));
+    ];
 
-    // 5. Parse response
+    let result;
+    try {
+      const model = client.getGenerativeModel({ model: tutorEngine.engine.model, generationConfig: genConfig });
+      result = await withRetry(() => model.generateContent(contentParts));
+    } catch (primaryErr) {
+      const status = primaryErr?.status || primaryErr?.response?.status;
+      if ((status === 404 || status === 503) && tutorEngine.engine.fallbackModel) {
+        console.warn(`Tutor: Primary model ${tutorEngine.engine.model} returned ${status}, falling back to ${tutorEngine.engine.fallbackModel}`);
+        const fallbackModel = client.getGenerativeModel({ model: tutorEngine.engine.fallbackModel, generationConfig: genConfig });
+        result = await withRetry(() => fallbackModel.generateContent(contentParts));
+      } else {
+        throw primaryErr;
+      }
+    }
+
+    // 6. Parse the model response. Non-JSON falls back to the engine's
+    // persona.fallback.error so the learner gets a coherent message
+    // instead of seeing a raw SDK blob.
     const responseText = result.response.text();
     let tutorResponse;
 
@@ -278,7 +299,7 @@ ${persona.rules.map(r => `- ${r}`).join('\n')}
 
 CURRENT PHASE: ${activePhase}
 Phase description: ${phaseConfig.description}
-${activePhase === 'cognitiveTrigger' && phaseConfig.forcePause ? 'IMPORTANT: This phase requires a pause. After presenting the trigger, stop and wait for the learner\'s response.' : ''}
+${activePhase === 'cognitiveTrigger' && phaseConfig.forcePause ? 'IMPORTANT: This phase is a TWO-BEAT pedagogical moment. Beat 1: present the trigger statement verbatim and STOP - do not ask a follow-up, do not explain, do not soften it. Let the discomfort land. Beat 2 (only after the learner responds with substantive acknowledgment - not just "ok" or "wow"): validate their reaction and ask the bridge question into discovery.' : ''}
 ${hint ? `HINT to offer learner (after ${attemptCount} attempts): "${hint}"` : ''}
 
 Case Study: ${caseStudy.title}
@@ -491,31 +512,56 @@ function determineTransition(tutorResponse, activePhase, learnerResponse, questi
     }
 
     case 'cognitiveTrigger': {
-      const acknowledged = SCALE_SIGNALS.some(s => lowerResponse.includes(s))
+      // v1.1: trigger is a TWO-BEAT pedagogical moment.
+      // The learner must (a) contain a scale signal AND (b) articulate
+      // the discomfort - not just "ok" / "wow" / "yeah". The minimum word
+      // count is read from tutorEngine so content authors / engine
+      // maintainers control it in one place. The pauseRequired flag on
+      // the case study is enforced via the read below.
+      const triggerConfig = tutorEngine.transitions.cognitiveTrigger_to_discovery;
+      const minWords = triggerConfig?.minAcknowledgmentWords || 6;
+      const wordCount = lowerResponse.split(/\s+/).filter(Boolean).length;
+      const scaleSignal = SCALE_SIGNALS.some(s => lowerResponse.includes(s))
         || lowerResponse.includes("that's")
         || lowerResponse.includes("too ")
         || lowerResponse.includes("can't")
         || lowerResponse.includes("impossible")
         || lowerResponse.includes("don't know");
+      const substantiveAcknowledgment = wordCount >= minWords;
 
-      if (acknowledged) {
+      if (scaleSignal && substantiveAcknowledgment) {
         return advancePhase(activePhase, guidedQuestions.length, questionIndex);
       }
       return { nextPhase: activePhase, status: 'needs_guidance' };
     }
 
     case 'discovery': {
+      // v1.1: discovery requires BOTH the grouping vocabulary AND
+      // substantive articulation in the learner's own words. "yeah" alone
+      // is not articulation; the Socratic contract requires the learner
+      // to verbalize the insight.
+      const discoveryConfig = tutorEngine.transitions.discovery_to_programmingMapping;
+      const minArticulation = discoveryConfig?.minArticulationWords || 5;
+      const wordCount = lowerResponse.split(/\s+/).filter(Boolean).length;
       const expressedGrouping = GROUPING_SIGNALS.some(s => lowerResponse.includes(s));
-      if (expressedGrouping) {
+      const substantive = wordCount >= minArticulation;
+      if (expressedGrouping && substantive) {
         return advancePhase(activePhase, guidedQuestions.length, questionIndex);
       }
-      // Partial — use hint
+      // Partial - use hint
       return { nextPhase: activePhase, status: 'needs_guidance' };
     }
 
     case 'programmingMapping': {
+      // v1.1: same fix as discovery. "okay" / "i see" are acks, not
+      // articulation. Require the understanding vocabulary AND
+      // minimum articulation length.
+      const pmConfig = tutorEngine.transitions.programmingMapping_to_practice;
+      const minArticulation = pmConfig?.minArticulationWords || 5;
+      const wordCount = lowerResponse.split(/\s+/).filter(Boolean).length;
       const acknowledged = UNDERSTANDING_SIGNALS.some(s => lowerResponse.includes(s));
-      if (acknowledged) {
+      const substantive = wordCount >= minArticulation;
+      if (acknowledged && substantive) {
         return advancePhase(activePhase, guidedQuestions.length, questionIndex);
       }
       return { nextPhase: activePhase, status: 'needs_guidance' };
@@ -615,20 +661,40 @@ function controllerAccepts(activePhase, studentExplanation, caseStudy, questionI
     }
 
     case 'cognitiveTrigger': {
-      return SCALE_SIGNALS.some(s => lower.includes(s))
+      // v1.1: mirror determineTransition. Requires scale signal AND
+      // a substantive reaction (>= minAcknowledgmentWords from engine).
+      // Without this guard the learner types "ok" and the trigger moment
+      // passes without ever landing.
+      const triggerConfig = tutorEngine.transitions.cognitiveTrigger_to_discovery;
+      const minWords = triggerConfig?.minAcknowledgmentWords || 6;
+      const wordCount = lower.split(/\s+/).filter(Boolean).length;
+      const scaleSignal = SCALE_SIGNALS.some(s => lower.includes(s))
         || lower.includes("that's")
         || lower.includes("too ")
         || lower.includes("can't")
         || lower.includes("impossible")
         || lower.includes("don't know");
+      return scaleSignal && wordCount >= minWords;
     }
 
     case 'discovery': {
-      return GROUPING_SIGNALS.some(s => lower.includes(s));
+      // v1.1: mirror determineTransition. Grouping vocabulary AND
+      // substantive articulation (>= minArticulationWords from engine).
+      const discoveryConfig = tutorEngine.transitions.discovery_to_programmingMapping;
+      const minArticulation = discoveryConfig?.minArticulationWords || 5;
+      const wordCount = lower.split(/\s+/).filter(Boolean).length;
+      const hasGrouping = GROUPING_SIGNALS.some(s => lower.includes(s));
+      return hasGrouping && wordCount >= minArticulation;
     }
 
     case 'programmingMapping': {
-      return UNDERSTANDING_SIGNALS.some(s => lower.includes(s));
+      // v1.1: mirror determineTransition. Understanding vocabulary AND
+      // minimum articulation length.
+      const pmConfig = tutorEngine.transitions.programmingMapping_to_practice;
+      const minArticulation = pmConfig?.minArticulationWords || 5;
+      const wordCount = lower.split(/\s+/).filter(Boolean).length;
+      const hasUnderstanding = UNDERSTANDING_SIGNALS.some(s => lower.includes(s));
+      return hasUnderstanding && wordCount >= minArticulation;
     }
 
     case 'practice': {
