@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, Brain, CheckCircle, Circle, ArrowLeft } from 'lucide-react';
 import { mockLevels } from '../data/mockData';
@@ -9,8 +9,36 @@ const Missions = () => {
   const navigate = useNavigate();
   const { completedMissions } = useProgress();
   
+  const [backendCaseStudies, setBackendCaseStudies] = useState([]);
+
+  useEffect(() => {
+    if (id === 'lvl-1' || id === 'lvl-2') {
+      fetch('http://localhost:5001/api/case-studies')
+        .then(res => res.json())
+        .then(data => setBackendCaseStudies(data))
+        .catch(console.error);
+    }
+  }, [id]);
+
   const levelData = mockLevels.find(l => l.id === id);
-  const missions = levelData ? levelData.missions : [];
+  let missions = levelData ? levelData.missions : [];
+  
+  if (id === 'lvl-1' || id === 'lvl-2') {
+    const filteredCaseStudies = backendCaseStudies.filter(cs => {
+      const isTrain = cs.title.toLowerCase().includes('train') || cs.title.toLowerCase().includes('rajdhani');
+      return id === 'lvl-2' ? isTrain : !isTrain;
+    });
+    
+    missions = filteredCaseStudies.map(cs => ({
+      id: cs.id,
+      title: cs.title,
+      description: cs.description,
+      difficulty: cs.difficulty || 'Medium',
+      xpReward: cs.xpReward || 150,
+      isCaseStudy: true
+    }));
+  }
+
   const topicTitle = levelData ? `Level ${levelData.levelNumber}: ${levelData.title}` : 'Missions';
 
   return (
@@ -57,7 +85,7 @@ const Missions = () => {
                 cursor: 'pointer',
                 transition: 'transform 0.2s, box-shadow 0.2s'
               }}
-              onClick={() => navigate(`/workspace/${mission.id}`)}
+              onClick={() => navigate(mission.isCaseStudy ? `/case-study/${mission.id}` : `/workspace/${mission.id}`)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
                 e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
