@@ -474,6 +474,7 @@ body {
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
+
 .sentence-card.is-playing {
   border-color: rgba(139, 92, 246, 0.5);
   box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25), 0 8px 24px -8px rgba(139, 92, 246, 0.35);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockLevels } from '../data/mockData';
-import { Lock, CheckCircle, Flag, Zap, Star, ArrowLeft, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Lock, Unlock, CheckCircle, Flag, Zap, Star, Compass, ArrowLeft, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
 import Logo from '../components/common/Logo';
 
