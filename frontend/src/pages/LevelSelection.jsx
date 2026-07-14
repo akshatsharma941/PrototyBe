@@ -1,14 +1,175 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockLevels } from '../data/mockData';
-import { Lock, Unlock, CheckCircle, Flag, Zap, Compass, ArrowLeft, X } from 'lucide-react';
+import { Lock, Unlock, CheckCircle, Flag, Zap, Star, Compass, ArrowLeft, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
 import Logo from '../components/common/Logo';
 
+// ─── Streak Calendar Component ─────────────────────────────────
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const DAY_HEADERS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+const StreakCalendar = ({ streakDates }) => {
+  const today = new Date();
+  const [viewYear, setViewYear] = useState(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const calendarDays = useMemo(() => {
+    const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    const days = [];
+
+    // Empty slots for days before the 1st
+    for (let i = 0; i < firstDay; i++) {
+      days.push({ day: null, key: `empty-${i}` });
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const isActive = streakDates.includes(dateStr);
+      const isToday = d === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear();
+      days.push({ day: d, key: dateStr, isActive, isToday });
+    }
+
+    return days;
+  }, [viewYear, viewMonth, streakDates]);
+
+  const goToPrevMonth = () => {
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear(y => y - 1);
+    } else {
+      setViewMonth(m => m - 1);
+    }
+  };
+
+  const goToNextMonth = () => {
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear(y => y + 1);
+    } else {
+      setViewMonth(m => m + 1);
+    }
+  };
+
+  return (
+    <div className="streak-calendar">
+      <div className="streak-calendar-nav">
+        <button onClick={goToPrevMonth} aria-label="Previous month">
+          <ChevronLeft size={16} />
+        </button>
+        <span>{MONTH_NAMES[viewMonth]} {viewYear}</span>
+        <button onClick={goToNextMonth} aria-label="Next month">
+          <ChevronRight size={16} />
+        </button>
+      </div>
+
+      <div className="streak-calendar-grid">
+        {DAY_HEADERS.map(d => (
+          <div key={d} className="streak-calendar-day-header">{d}</div>
+        ))}
+        {calendarDays.map(({ day, key, isActive, isToday }) => (
+          <div
+            key={key}
+            className={`streak-calendar-day${day === null ? ' empty' : ''}${isActive ? ' active-day' : ''}${isToday ? ' today' : ''}`}
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── Streak Modal Component ────────────────────────────────────
+const StreakModal = ({ streak, streakDates, onClose }) => {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div className="streak-modal-overlay" onClick={onClose}>
+      <div className="streak-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Streak Calendar">
+        <button className="streak-modal-close" onClick={onClose} aria-label="Close">
+          <X size={18} />
+        </button>
+
+        <div className="streak-modal-header">
+          <span className="streak-modal-fire">🔥</span>
+          <div className="streak-modal-count">{streak}</div>
+          <div className="streak-modal-label">day streak!</div>
+        </div>
+
+        <div style={{
+          padding: '0.75rem 1rem',
+          background: 'rgba(59, 130, 246, 0.08)',
+          border: '1px solid rgba(59, 130, 246, 0.2)',
+          borderRadius: '12px',
+          textAlign: 'center',
+          fontSize: '0.85rem',
+          color: 'var(--text-secondary)',
+          lineHeight: 1.5
+        }}>
+          <span style={{ color: '#60a5fa', fontWeight: 600 }}>Keep it up!</span> Practice daily to maintain your streak and earn bonus XP.
+        </div>
+
+        <StreakCalendar streakDates={streakDates} />
+      </div>
+    </div>
+  );
+};
+
+// ─── Node Tooltip Component ────────────────────────────────────
+const NodeTooltip = ({ level, percent, isUnlocked, isCompleted, onStart }) => (
+  <div className="path-tooltip" onClick={(e) => e.stopPropagation()}>
+    <div className="path-tooltip-title">Level {level.levelNumber}: {level.title}</div>
+    <div className="path-tooltip-desc">{level.description}</div>
+    <div className="path-tooltip-meta">
+      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+        <Flag size={12} color="var(--accent-secondary)" /> {level.missions.length} Missions
+      </span>
+      <span>{percent}% Complete</span>
+    </div>
+    <div className="path-tooltip-progress">
+      <div className="path-tooltip-progress-bar" style={{
+        width: `${percent}%`,
+        background: isCompleted ? 'var(--success)' : undefined
+      }} />
+    </div>
+    {isUnlocked ? (
+      <button className="path-tooltip-btn btn-start" onClick={onStart}>
+        {percent > 0 ? 'Continue' : 'Start'}
+      </button>
+    ) : (
+      <button className="path-tooltip-btn btn-locked" disabled>
+        🔒 Locked
+      </button>
+    )}
+  </div>
+);
+
+// ─── Path Node Positions ───────────────────────────────────────
+const NODE_VERTICAL_SPACING = 150;
+const PATH_WIDTH = 420;
+
+const getNodePosition = (index, total) => {
+  // Serpentine S-curve: alternates left and right
+  const pattern = [0.5, 0.25, 0.5, 0.75]; // center, left, center, right
+  const patternIndex = index % pattern.length;
+  const x = PATH_WIDTH * pattern[patternIndex];
+  const y = 60 + index * NODE_VERTICAL_SPACING;
+  return { x, y };
+};
+
+// ─── Main Component ────────────────────────────────────────────
 const LevelSelection = () => {
   const navigate = useNavigate();
-  const { xp, discoveredConcepts, getLevelProgress } = useProgress();
+  const { xp, discoveredConcepts, getLevelProgress, streak, streakDates } = useProgress();
   const [lockedPopup, setLockedPopup] = useState(null);
+  const [showStreakModal, setShowStreakModal] = useState(false);
+  const [hoveredNode, setHoveredNode] = useState(null);
 
   useEffect(() => {
     if (!lockedPopup) return;
@@ -19,8 +180,7 @@ const LevelSelection = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [lockedPopup]);
 
-  const handleCardClick = (level) => {
-    const { isUnlocked } = getLevelProgress(level.levelNumber);
+  const handleNodeClick = (level, isUnlocked) => {
     if (isUnlocked) {
       navigate(`/level/${level.id}/missions`);
     } else {
@@ -28,39 +188,73 @@ const LevelSelection = () => {
     }
   };
 
+  // Determine the "active" level (first unlocked but not completed)
+  const activeIndex = useMemo(() => {
+    for (let i = 0; i < mockLevels.length; i++) {
+      const { percent, isUnlocked } = getLevelProgress(mockLevels[i].levelNumber);
+      if (isUnlocked && percent < 100) return i;
+    }
+    return 0;
+  }, [getLevelProgress]);
+
+  // Calculate node positions
+  const nodePositions = useMemo(() => {
+    return mockLevels.map((_, i) => getNodePosition(i, mockLevels.length));
+  }, []);
+
+  // Generate SVG connector paths
+  const connectorPaths = useMemo(() => {
+    const paths = [];
+    for (let i = 0; i < nodePositions.length - 1; i++) {
+      const from = nodePositions[i];
+      const to = nodePositions[i + 1];
+      const midY = (from.y + to.y) / 2;
+      const d = `M ${from.x} ${from.y} C ${from.x} ${midY}, ${to.x} ${midY}, ${to.x} ${to.y}`;
+      paths.push({ d, fromIndex: i, toIndex: i + 1 });
+    }
+    return paths;
+  }, [nodePositions]);
+
+  const totalHeight = 60 + (mockLevels.length - 1) * NODE_VERTICAL_SPACING + 100;
+
   return (
-    <div style={{ 
-      width: '100%', 
-      height: '100%', 
-      overflowY: 'auto', 
-      padding: '2rem 1rem 4rem',
-      background: 'radial-gradient(circle at top left, rgba(59, 130, 246, 0.05), transparent 50%)'
-    }}>
+    <div className="doodle-bg learning-path-page">
       <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+        {/* ── Top Bar ────────────────────────────────────── */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <button
-            onClick={() => navigate('/')}
-            className="btn-back"
-          >
+          <button onClick={() => navigate('/')} className="btn-back">
             <ArrowLeft size={16} /> Back to Home
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Logo size="small" />
-            {/* XP — pinned to top right */}
+
+            {/* Streak Fire Badge */}
             <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.5rem 1rem',
-                background: 'rgba(245, 158, 11, 0.1)',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
-                borderRadius: '999px',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                boxShadow: 'var(--shadow-sm)'
-              }}
+              className="streak-badge"
+              onClick={() => setShowStreakModal(true)}
+              role="button"
+              tabIndex={0}
+              aria-label={`${streak} day streak. Click to view streak calendar.`}
+              onKeyDown={(e) => e.key === 'Enter' && setShowStreakModal(true)}
             >
+              <span className="streak-fire">🔥</span>
+              <span className="streak-number">{streak}</span>
+            </div>
+
+            {/* XP Badge */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              background: 'rgba(245, 158, 11, 0.1)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              borderRadius: '999px',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              boxShadow: 'var(--shadow-sm)'
+            }}>
               <Zap size={16} color="#f59e0b" fill="#f59e0b" />
               <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.5px' }}>
                 {xp} XP
@@ -68,27 +262,28 @@ const LevelSelection = () => {
             </div>
           </div>
         </div>
-        {/* Discovered Concepts (XP moved to top-right) */}
+
+        {/* ── Discovered Concepts ────────────────────────── */}
         <div style={{
           width: '100%',
-          marginBottom: '3rem',
+          marginBottom: '2rem',
           display: 'flex',
           alignItems: 'flex-start',
           gap: '0.75rem',
-          padding: '1.5rem 2rem',
+          padding: '1.25rem 1.5rem',
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid var(--glass-border)',
           borderRadius: '16px',
           backdropFilter: 'blur(10px)'
         }}>
           <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '0.5rem', borderRadius: '50%', marginTop: '0.2rem' }}>
-            <Compass size={20} color="#3b82f6" />
+            <Star size={20} color="#3b82f6" />
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Discovered Concepts</div>
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
               {discoveredConcepts.length === 0 ? (
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>None yet</span>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>None yet — start your journey below!</span>
               ) : (
                 discoveredConcepts.map(concept => (
                   <span key={concept} style={{
@@ -107,157 +302,120 @@ const LevelSelection = () => {
           </div>
         </div>
 
-        <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h1 style={{ 
-            fontSize: '3rem', 
-            marginBottom: '1rem',
-            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))', 
-            WebkitBackgroundClip: 'text', 
+        {/* ── Path Header ───────────────────────────────── */}
+        <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h1 style={{
+            fontSize: '2.5rem',
+            marginBottom: '0.75rem',
+            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+            WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             fontWeight: 700
           }}>
             Your Learning Path
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
             Progress through the levels. Master the logic before touching the syntax.
           </p>
         </header>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', position: 'relative' }}>
-          {/* Vertical line connecting nodes — centered on the 60px icons (left: 30px = 60/2) */}
-          <div
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              top: '30px',
-              bottom: '30px',
-              left: '30px',
-              width: '3px',
-              background: 'linear-gradient(180deg, var(--glass-border) 0%, rgba(139, 92, 246, 0.25) 50%, var(--glass-border) 100%)',
-              borderRadius: '2px',
-              transform: 'translateX(-1.5px)',
-              zIndex: 0
-            }}
-          />
+        {/* ── Serpentine Path ────────────────────────────── */}
+        <div style={{
+          position: 'relative',
+          width: `${PATH_WIDTH}px`,
+          height: `${totalHeight}px`,
+          margin: '0 auto'
+        }}>
+          {/* SVG connectors */}
+          <svg
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
+            viewBox={`0 0 ${PATH_WIDTH} ${totalHeight}`}
+            preserveAspectRatio="none"
+          >
+            {connectorPaths.map(({ d, fromIndex, toIndex }, i) => {
+              const fromProgress = getLevelProgress(mockLevels[fromIndex].levelNumber);
+              const toProgress = getLevelProgress(mockLevels[toIndex].levelNumber);
+              let connectorClass = 'path-connector-line';
+              if (fromProgress.percent === 100 && toProgress.isUnlocked) {
+                connectorClass += ' completed';
+              } else if (fromIndex === activeIndex || toIndex === activeIndex) {
+                connectorClass += ' active';
+              }
+              return <path key={i} d={d} className={connectorClass} />;
+            })}
+          </svg>
 
-          {mockLevels.map((level) => {
+          {/* Nodes */}
+          {mockLevels.map((level, index) => {
             const { percent, isUnlocked } = getLevelProgress(level.levelNumber);
             const isCompleted = percent === 100;
+            const isActive = index === activeIndex;
+            const pos = nodePositions[index];
+
+            let nodeClass = 'path-node';
+            if (isCompleted) nodeClass += ' node-completed';
+            else if (isActive) nodeClass += ' node-active';
+            else if (!isUnlocked) nodeClass += ' node-locked';
+            else nodeClass += ' node-active'; // unlocked but not the primary active
 
             return (
               <div
                 key={level.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'stretch',
-                  gap: '1.5rem',
-                  position: 'relative',
-                  zIndex: 1
-                }}
+                className={nodeClass}
+                style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
+                onClick={() => handleNodeClick(level, isUnlocked)}
+                onMouseEnter={() => setHoveredNode(level.id)}
+                onMouseLeave={() => setHoveredNode(null)}
+                role="button"
+                tabIndex={0}
+                aria-label={`Level ${level.levelNumber}: ${level.title}. ${isUnlocked ? (isCompleted ? 'Completed' : 'Available') : 'Locked'}`}
               >
-                {/* Icon column — fixed width so every node lines up with the vertical line */}
-                <div
-                  style={{
-                    width: '60px',
-                    flexShrink: 0,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    position: 'relative'
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '60px',
-                      height: '60px',
-                      borderRadius: '50%',
-                      background: isCompleted
-                        ? 'rgba(16, 185, 129, 0.2)'
-                        : (isUnlocked ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-primary)'),
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: `2px solid ${isUnlocked ? 'var(--accent-secondary)' : 'var(--glass-border)'}`,
-                      boxShadow: isUnlocked ? 'var(--shadow-md)' : 'none',
-                      transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-                      position: 'relative',
-                      zIndex: 2
-                    }}
-                  >
-                    {isCompleted ? (
-                      <CheckCircle size={28} color="var(--success)" />
-                    ) : isUnlocked ? (
-                      <Unlock size={28} color="var(--accent-secondary)" />
-                    ) : (
-                      <Lock size={28} color="var(--text-secondary)" />
-                    )}
-                  </div>
-                </div>
+                {/* Outer ring for active node */}
+                {isActive && <div className="node-outer-ring" />}
 
-                {/* Card */}
-                <div
-                  className={`glass-panel ${!isUnlocked ? 'ide-disabled' : ''}`}
-                  style={{
-                    flex: 1,
-                    padding: '2rem',
-                    display: 'flex',
-                    gap: '2rem',
-                    alignItems: 'center',
-                    cursor: isUnlocked ? 'pointer' : 'not-allowed',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease',
-                    opacity: isUnlocked ? 1 : 0.6,
-                    marginLeft: 0,
-                    marginRight: 0
-                  }}
-                  onClick={() => handleCardClick(level)}
-                  onMouseEnter={(e) => {
-                    if (isUnlocked) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (isUnlocked) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                    }
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem' }}>
-                      <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)' }}>Level {level.levelNumber}: {level.title}</h2>
-                    </div>
-                    <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1rem' }}>
-                      {level.description}
-                    </p>
+                {/* Start here label for active node */}
+                {isActive && hoveredNode !== level.id && (
+                  <div className="path-start-label">Start Here</div>
+                )}
 
-                    <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', fontSize: '0.9rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
-                        <Flag size={16} color="var(--accent-secondary)" />
-                        <span>{level.missions.length} Missions</span>
-                      </div>
+                {/* Node icon */}
+                {isCompleted ? (
+                  <CheckCircle size={32} color="#10b981" />
+                ) : (isActive || isUnlocked) ? (
+                  <Star size={32} color="#3b82f6" fill="rgba(59, 130, 246, 0.3)" />
+                ) : (
+                  <Lock size={28} color="rgba(255, 255, 255, 0.3)" />
+                )}
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '200px' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Progress:</span>
-                        <div style={{ flex: 1, height: '8px', background: 'var(--bg-primary)', borderRadius: '4px', overflow: 'hidden' }}>
-                          <div style={{
-                            height: '100%',
-                            width: `${percent}%`,
-                            background: isCompleted ? 'var(--success)' : 'linear-gradient(90deg, var(--accent-secondary), var(--accent-primary))',
-                            borderRadius: '4px',
-                            transition: 'width 0.4s ease'
-                          }} />
-                        </div>
-                        <span style={{ color: 'var(--text-primary)', fontWeight: 500, minWidth: '40px' }}>{percent}%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {/* Level label */}
+                <span className="path-node-label">Level {level.levelNumber}</span>
+
+                {/* Hover tooltip */}
+                {hoveredNode === level.id && (
+                  <NodeTooltip
+                    level={level}
+                    percent={percent}
+                    isUnlocked={isUnlocked}
+                    isCompleted={isCompleted}
+                    onStart={() => navigate(`/level/${level.id}/missions`)}
+                  />
+                )}
               </div>
             );
           })}
         </div>
       </div>
 
+      {/* ── Streak Modal ──────────────────────────────── */}
+      {showStreakModal && (
+        <StreakModal
+          streak={streak}
+          streakDates={streakDates}
+          onClose={() => setShowStreakModal(false)}
+        />
+      )}
+
+      {/* ── Locked Level Popup ────────────────────────── */}
       {lockedPopup && (
         <div
           onClick={() => setLockedPopup(null)}
@@ -323,32 +481,22 @@ const LevelSelection = () => {
               <X size={18} />
             </button>
 
-            <div
-              style={{
-                width: '72px',
-                height: '72px',
-                borderRadius: '50%',
-                background: 'rgba(239, 68, 68, 0.12)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 1.25rem',
-                boxShadow: '0 0 24px rgba(239, 68, 68, 0.15)'
-              }}
-            >
+            <div style={{
+              width: '72px',
+              height: '72px',
+              borderRadius: '50%',
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.25rem',
+              boxShadow: '0 0 24px rgba(239, 68, 68, 0.15)'
+            }}>
               <Lock size={32} color="#ef4444" />
             </div>
 
-            <h2
-              id="locked-modal-title"
-              style={{
-                fontSize: '1.5rem',
-                fontWeight: 700,
-                color: 'var(--text-primary)',
-                marginBottom: '0.5rem'
-              }}
-            >
+            <h2 id="locked-modal-title" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
               Level Locked
             </h2>
 

@@ -474,6 +474,7 @@ body {
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
+
 .sentence-card.is-playing {
   border-color: rgba(139, 92, 246, 0.5);
   box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25), 0 8px 24px -8px rgba(139, 92, 246, 0.35);
@@ -615,3 +616,503 @@ body {
 }
 
 
+/* ═══════════════════════════════════════════════════════════
+   GAMIFIED LEARNING PATH — Serpentine Path, Tooltips, Streak
+   ═══════════════════════════════════════════════════════════ */
+
+/* Active node pulsing glow */
+@keyframes nodeGlowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(59, 130, 246, 0.2); }
+}
+
+/* Tooltip appear */
+@keyframes tooltipAppear {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Streak fire icon pulse */
+@keyframes firePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Streak badge hover glow */
+@keyframes fireGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4)); }
+  50% { filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.7)); }
+}
+
+/* Calendar date pop-in */
+@keyframes calendarDatePop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Modal slide-up */
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Path node — base */
+.path-node {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, z-index 0s;
+  z-index: 2;
+  transform: translateX(-50%);
+}
+
+/* Hovered node rises above all others so tooltip is never clipped */
+.path-node:hover {
+  transform: translateX(-50%) scale(1.1);
+  z-index: 50;
+}
+
+.path-node.node-active {
+  background: #0f172a;
+  border: 3px solid #3b82f6;
+  animation: nodeGlowPulse 2.5s ease-in-out infinite;
+}
+
+.path-node.node-active:hover {
+  animation: none;
+  box-shadow: 0 0 35px rgba(59, 130, 246, 0.5), 0 0 70px rgba(59, 130, 246, 0.2);
+}
+
+.path-node.node-completed {
+  background: #0f172a;
+  border: 3px solid #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+/* Locked: NO opacity (it creates a stacking context that traps the tooltip).
+   Use filter:brightness instead to visually dim the node without affecting z-index. */
+.path-node.node-locked {
+  background: #0f172a;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  cursor: not-allowed;
+  filter: brightness(0.5);
+}
+
+/* When hovered, bring locked node to full brightness so tooltip reads clearly */
+.path-node.node-locked:hover {
+  transform: translateX(-50%) scale(1.0);
+  filter: brightness(1);
+  z-index: 50;
+}
+
+/* Level number label below node */
+.path-node-label {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.path-node.node-active .path-node-label {
+  color: #60a5fa;
+}
+
+.path-node.node-completed .path-node-label {
+  color: #34d399;
+}
+
+/* Tooltip card */
+.path-tooltip {
+  position: absolute;
+  bottom: calc(100% + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  padding: 1.25rem;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  animation: tooltipAppear 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+/* Tooltip arrow */
+.path-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #1e293b;
+}
+
+.path-tooltip-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.path-tooltip-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.path-tooltip-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.path-tooltip-progress {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.path-tooltip-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
+  transition: width 0.4s ease;
+}
+
+.path-tooltip-btn {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.path-tooltip-btn.btn-start {
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+  color: white;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+}
+
+.path-tooltip-btn.btn-start:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.path-tooltip-btn.btn-locked {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Streak badge */
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.streak-badge:hover {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+.streak-badge:hover .streak-fire {
+  animation: firePulse 0.6s ease-in-out infinite;
+}
+
+.streak-fire {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.streak-number {
+  color: #f59e0b;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+/* Streak Calendar Modal */
+.streak-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.streak-modal {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1);
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.streak-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.streak-modal-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+}
+
+.streak-modal-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.streak-modal-fire {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  animation: firePulse 1.5s ease-in-out infinite;
+}
+
+.streak-modal-count {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #f59e0b;
+  line-height: 1;
+}
+
+.streak-modal-label {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+/* Calendar */
+.streak-calendar {
+  margin-top: 1.5rem;
+}
+
+.streak-calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.streak-calendar-nav span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.streak-calendar-nav button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.35rem 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.streak-calendar-nav button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+}
+
+.streak-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.streak-calendar-day-header {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  padding: 0.4rem 0;
+  letter-spacing: 0.5px;
+}
+
+.streak-calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.streak-calendar-day.empty {
+  visibility: hidden;
+}
+
+.streak-calendar-day.active-day {
+  background: var(--accent-secondary);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+  animation: calendarDatePop 0.3s ease-out;
+}
+
+.streak-calendar-day.today {
+  border: 2px solid var(--accent-secondary);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.streak-calendar-day.today.active-day {
+  border-color: transparent;
+}
+
+/* Connector SVG path */
+.path-connector-line {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.path-connector-line.completed {
+  stroke: rgba(16, 185, 129, 0.3);
+}
+
+.path-connector-line.active {
+  stroke: rgba(59, 130, 246, 0.25);
+  stroke-dasharray: 8 4;
+  animation: dashScroll 1s linear infinite;
+}
+
+@keyframes dashScroll {
+  to { stroke-dashoffset: -12; }
+}
+
+/* Outer ring for active node */
+.node-outer-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  animation: nodeGlowPulse 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Start here indicator */
+.path-start-label {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.2rem 0.75rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 999px;
+  white-space: nowrap;
+  animation: tooltipAppear 0.5s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REUSABLE DOODLE BACKGROUND — add .doodle-bg to any page
+   ═══════════════════════════════════════════════════════════ */
+
+/* The doodle container — apply to any page's outermost wrapper */
+.doodle-bg {
+  position: relative;
+}
+
+/* Fixed doodle watermark layer — stays while content scrolls over it */
+.doodle-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/doodles-bg.png');
+  background-repeat: repeat;
+  background-size: 500px 500px;
+  background-attachment: fixed;
+  filter: invert(1);
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ─── Learning Path page-specific layout ────────────────────── */
+.learning-path-page {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 2rem 1rem 4rem;
+  background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.05), transparent 50%);
+}
