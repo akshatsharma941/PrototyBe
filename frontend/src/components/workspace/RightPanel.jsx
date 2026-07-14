@@ -80,7 +80,7 @@ const RightPanel = ({ pycratesStatus }) => {
           // but for general execution, just send the code.
         }
 
-        const response = await fetch('http://localhost:5000/api/execute', {
+        const response = await fetch('http://localhost:5001/api/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
