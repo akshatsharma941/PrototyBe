@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Bot, Volume2 } from 'lucide-react';
-import SentenceCard from '../components/case-study/SentenceCard';
-import { mockSentences } from '../data/sentences';
+import { Bot } from 'lucide-react';
 
 const CaseStudy = () => {
   const { id } = useParams();
@@ -27,11 +25,13 @@ const CaseStudy = () => {
       });
   }, [id]);
 
-  if (loading) return <div className="container" style={{ padding: '3rem', textAlign: 'center' }}><div className="loader">Loading...</div></div>;
-  if (error) return <div className="container" style={{ padding: '3rem', textAlign: 'center' }}><div className="error-message">{error}</div></div>;
+  if (loading) return <div className="container" style={{ padding: '3rem', textAlign: 'center', overflowY: 'auto', height: '100%' }}><div className="loader">Loading...</div></div>;
+  if (error) return <div className="container" style={{ padding: '3rem', textAlign: 'center', overflowY: 'auto', height: '100%' }}><div className="error-message">{error}</div></div>;
+
+  const concepts = caseStudy.tags || caseStudy.objectives || caseStudy.requiredConcepts || [];
 
   return (
-    <div className="container" style={{ padding: '3rem', maxWidth: '800px', margin: '0 auto' }}>
+    <div className="container doodle-bg" style={{ padding: '3rem', maxWidth: '800px', margin: '0 auto', overflowY: 'auto', height: '100%' }}>
       <div className="glass-panel" style={{ padding: '3rem' }}>
         <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--accent-primary)' }}>{caseStudy.title}</h2>
         
@@ -40,28 +40,16 @@ const CaseStudy = () => {
           <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>{caseStudy.description}</p>
         </div>
 
-        <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem' }}>
-          <h4 style={{ color: 'var(--accent-secondary)', marginBottom: '0.5rem' }}>Concepts to Learn</h4>
-          <ul style={{ paddingLeft: '1.5rem', color: 'var(--text-secondary)' }}>
-            {caseStudy.requiredConcepts.map((concept, idx) => (
-              <li key={idx} style={{ marginBottom: '0.5rem' }}>{concept}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div style={{ marginBottom: '2rem' }}>
-          <h4 style={{ color: 'var(--text-secondary)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Volume2 size={16} /> Listen &amp; Learn
-          </h4>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Tap the speaker icon on any card to hear it read aloud. Only one sentence plays at a time.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {mockSentences.map((sentence) => (
-              <SentenceCard key={sentence.id} sentence={sentence} />
-            ))}
+        {concepts.length > 0 && (
+          <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem' }}>
+            <h4 style={{ color: 'var(--accent-secondary)', marginBottom: '0.5rem' }}>Concepts to Learn</h4>
+            <ul style={{ paddingLeft: '1.5rem', color: 'var(--text-secondary)' }}>
+              {concepts.map((concept, idx) => (
+                <li key={idx} style={{ marginBottom: '0.5rem' }}>{concept}</li>
+              ))}
+            </ul>
           </div>
-        </div>
+        )}
 
         <div style={{ textAlign: 'center' }}>
           <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Ready to analyze the problem? You won't write code yet. You'll talk to your AI tutor first to plan your approach.</p>
