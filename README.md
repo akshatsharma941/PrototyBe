@@ -51,6 +51,39 @@ The prototype is now fully functional and supports the complete learner journey:
 4. **Coding Challenge (`/challenge/:id`)**: A full-screen IDE using Monaco Editor. Students can write code, manually run it via the **Piston API**, or submit it for grading against hidden test cases. 
 5. **Deterministic Evaluation**: The backend runs the code against MongoDB test cases and parses runtime errors (Syntax, Indentation, Name, etc.) and logic errors to provide concept-specific retry hints *without* using AI.
 
+## Case Studies & Misconception Library
+
+Case studies live in `backend/seedData.js` (Schema v1.1). Each one walks a learner through 8 Socratic phases before unlocking the editor. The misconception library is in `backend/misconceptions/`.
+
+### Currently authored case studies
+
+| # | ID | Concept taught | Difficulty | Prereq |
+|---|----|---------------|------------|--------|
+| 1 | `cricket-scoreboard`       | Lists — one name for many values            | beginner     | — |
+| 2 | `tiffin-service-orders`    | Dictionaries — lookup by a known name       | beginner     | cricket |
+| 3 | `bakery-checkout`          | Variables + arithmetic (v1.0 schema)        | beginner     | — |
+| 4 | `age-verification-system`  | Conditionals + comparisons (v1.0 schema)    | beginner     | — |
+| 5 | `inventory-stock-checker`  | Lists + for-loops (v1.0 schema)             | beginner     | — |
+| 6 | `attendance-register`      | Lists as a dynamic container                | beginner     | — |
+| 7 | `tatkal-ticket-window`     | **Tuples — fixed records, replaced whole**  | intermediate | tiffin, attendance |
+
+### Misconception library
+
+| ID | Family | Description |
+|----|--------|-------------|
+| `naming-collision`        | data-organisation | Renaming labels doesn't fix structural problems |
+| `scale-failure`           | data-organisation | What works for 11 breaks at 80 — different in kind, not degree |
+| `static-structure`        | data-organisation | Renumbering is a one-time cost; structural fragility is recurring |
+| `position-based-lookup`   | data-organisation | Position-based access fails when the user knows the name, not the position |
+| `piecewise-update`        | data-organisation | Editing one field in place corrupts the identity of the whole record |
+
+### Adding a new case study
+
+1. Add a new misconception file in `backend/misconceptions/` if needed, and register it in `backend/misconceptions/library-index.js`.
+2. Append a new case-study object to the `seedData` array in `backend/seedData.js`. Match Schema v1.1 — see `tatkal-ticket-window` or `attendance-register` as templates.
+3. The tutor engine (`backend/tutorEngine.js`) and controller (`backend/controllers/tutorController.js`) are domain-agnostic. No engine changes needed.
+4. Restart the backend so `seed.js` re-seeds MongoDB.
+
 ## Final Status
 - **Frontend**: React + Vite, React Router, Monaco Editor, Lucide Icons, Custom CSS Glassmorphism Design System.
 - **Backend**: Node.js, Express, Mongoose, Gemini SDK.

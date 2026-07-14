@@ -15,7 +15,7 @@ const CodeChallenge = () => {
   const [evalResult, setEvalResult] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/case-studies/${id}`)
+    fetch(`http://localhost:5001/api/case-studies/${id}`)
       .then(res => {
          if (!res.ok) throw new Error('Case study not found');
          return res.json();
@@ -37,7 +37,7 @@ const CodeChallenge = () => {
     setEvalResult(null);
     
     try {
-      const res = await fetch('http://localhost:5000/api/execute', {
+      const res = await fetch('http://localhost:5001/api/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ const CodeChallenge = () => {
     setOutput('Evaluating against hidden test cases...');
     
     try {
-      const res = await fetch('http://localhost:5000/api/eval', {
+      const res = await fetch('http://localhost:5001/api/eval', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
