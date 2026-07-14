@@ -93,8 +93,8 @@ export const ProgressProvider = ({ children }) => {
         streakDates: saved.streakDates || [],
       };
     }
-    // First-time visitor: seed with 5 days of demo streak
-    const initialDates = generateInitialStreakDates(5);
+    // First-time visitor: no initial streak
+    const initialDates = generateInitialStreakDates(0);
     return {
       completedMissions: [],
       xp: 0,
