@@ -128,7 +128,7 @@ const NodeTooltip = ({ level, percent, isUnlocked, isCompleted, onStart }) => (
     <div className="path-tooltip-desc">{level.description}</div>
     <div className="path-tooltip-meta">
       <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-        <Flag size={12} color="var(--accent-secondary)" /> {level.missions.length} Missions
+        <Flag size={12} color="var(--accent-secondary)" /> {level.missions.length} Case Studies
       </span>
       <span>{percent}% Complete</span>
     </div>
@@ -182,7 +182,7 @@ const LevelSelection = () => {
 
   const handleNodeClick = (level, isUnlocked) => {
     if (isUnlocked) {
-      navigate(`/level/${level.id}/missions`);
+      navigate(`/level/${level.id}/case-studies`);
     } else {
       setLockedPopup(level);
     }
@@ -397,7 +397,7 @@ const LevelSelection = () => {
                     percent={percent}
                     isUnlocked={isUnlocked}
                     isCompleted={isCompleted}
-                    onStart={() => navigate(`/level/${level.id}/missions`)}
+                    onStart={() => navigate(`/level/${level.id}/case-studies`)}
                   />
                 )}
               </div>

@@ -4,7 +4,7 @@ import { Clock, Brain, CheckCircle, Circle, ArrowLeft } from 'lucide-react';
 import { mockLevels } from '../data/mockData';
 import { useProgress } from '../context/ProgressContext';
 
-const Missions = () => {
+const CaseStudies = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { completedMissions } = useProgress();
@@ -39,7 +39,7 @@ const Missions = () => {
     }));
   }
 
-  const topicTitle = levelData ? `Level ${levelData.levelNumber}: ${levelData.title}` : 'Missions';
+  const topicTitle = levelData ? `Level ${levelData.levelNumber}: ${levelData.title}` : 'Case Studies';
 
   return (
     <div className="doodle-bg" style={{ 
@@ -66,7 +66,7 @@ const Missions = () => {
             color: 'var(--text-primary)',
             fontWeight: 700
           }}>
-            {topicTitle} Missions
+            {topicTitle} Case Studies
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
             Select a scenario to practice your reasoning skills.
@@ -133,4 +133,4 @@ const Missions = () => {
   );
 };
 
-export default Missions;
+export default CaseStudies;

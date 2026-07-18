@@ -101,7 +101,7 @@ const CodeChallenge = () => {
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{caseStudy.targetInsight}</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button className="btn-run" onClick={handleRunCode} disabled={isExecuting} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--glass-border)' }}>
+          <button className="btn-ide-run" onClick={handleRunCode} disabled={isExecuting}>
             <Play size={14} /> Run (Manual)
           </button>
           <button className="btn-primary" onClick={handleSubmit} disabled={isExecuting}>

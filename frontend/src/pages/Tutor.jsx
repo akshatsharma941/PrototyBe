@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Send, Bot, User, Code, Play, ChevronUp, ChevronDown } from 'lucide-react';
+import { Send, Bot, User, Code, Play, ChevronUp, ChevronDown, ArrowLeft } from 'lucide-react';
 import '../index.css';
 
 const Tutor = () => {
@@ -265,6 +265,9 @@ const Tutor = () => {
           
           {/* Case Study Context */}
           <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--glass-border)', flexShrink: 0, maxHeight: '30vh', overflowY: 'auto' }}>
+            <button onClick={() => navigate(-1)} className="btn-back" style={{ marginBottom: '1rem' }}>
+              <ArrowLeft size={16} /> Back
+            </button>
             <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.25rem', marginBottom: '0.75rem', color: 'var(--accent-primary)' }}>
               <Code size={18} /> Case Study: {caseStudy?.title || 'Loading...'}
             </h3>
@@ -383,7 +386,7 @@ const Tutor = () => {
           {/* IDE Header */}
           <div className="ide-header" style={{ flexShrink: 0 }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>Workspace</h3>
-            <button className="btn-run" onClick={handleRunCode} disabled={isExecuting}>
+            <button className="btn-ide-run" onClick={handleRunCode} disabled={isExecuting}>
               <Play size={14} /> {isExecuting ? 'Running...' : 'Run Code'}
             </button>
           </div>
@@ -404,13 +407,12 @@ const Tutor = () => {
               </div>
               {caseStudy.practice[0].hint && (
                 <div>
-                  {!hintVisible ? (
-                    <button type="button" onClick={() => setHintVisible(true)}
-                      style={{ background: 'transparent', border: '1px solid rgba(251, 191, 36, 0.4)', color: '#fbbf24', padding: '0.3rem 0.7rem', fontSize: '0.8rem', borderRadius: '4px', cursor: 'pointer' }}>
-                      Show Hint
-                    </button>
-                  ) : (
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', padding: '0.55rem 0.75rem', borderRadius: '4px', lineHeight: '1.45' }}>
+                  <button type="button" onClick={() => setHintVisible(!hintVisible)}
+                    style={{ background: hintVisible ? 'rgba(251, 191, 36, 0.1)' : 'transparent', border: '1px solid rgba(251, 191, 36, 0.4)', color: '#fbbf24', padding: '0.4rem 0.8rem', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', marginBottom: hintVisible ? '0.75rem' : '0', transition: 'all 0.2s', fontWeight: 500 }}>
+                    {hintVisible ? 'Hide Hint' : 'Show Hint'}
+                  </button>
+                  {hintVisible && (
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', padding: '0.75rem 1rem', borderRadius: '6px', lineHeight: '1.5' }}>
                       <span style={{ color: '#fbbf24', fontWeight: 600 }}>Hint: </span>
                       {caseStudy.practice[0].hint}
                     </div>
