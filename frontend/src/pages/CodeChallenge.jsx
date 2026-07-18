@@ -15,7 +15,7 @@ const CodeChallenge = () => {
   const [evalResult, setEvalResult] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5001/api/case-studies/${id}`)
+    fetch(`http://localhost:5000/api/case-studies/${id}`)
       .then(res => {
          if (!res.ok) throw new Error('Case study not found');
          return res.json();
@@ -37,7 +37,7 @@ const CodeChallenge = () => {
     setEvalResult(null);
     
     try {
-      const res = await fetch('http://localhost:5001/api/execute', {
+      const res = await fetch('http://localhost:5000/api/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ const CodeChallenge = () => {
     setOutput('Evaluating against hidden test cases...');
     
     try {
-      const res = await fetch('http://localhost:5001/api/eval', {
+      const res = await fetch('http://localhost:5000/api/eval', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -101,7 +101,7 @@ const CodeChallenge = () => {
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{caseStudy.targetInsight}</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button className="btn-run" onClick={handleRunCode} disabled={isExecuting} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--glass-border)' }}>
+          <button className="btn-ide-run" onClick={handleRunCode} disabled={isExecuting}>
             <Play size={14} /> Run (Manual)
           </button>
           <button className="btn-primary" onClick={handleSubmit} disabled={isExecuting}>

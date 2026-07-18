@@ -2,7 +2,7 @@ import React from 'react';
 
 const steps = [
   {
-    title: 'Mission',
+    title: 'Case Study',
     desc: 'You are given a realistic, open-ended problem to solve.'
   },
   {

@@ -28,14 +28,14 @@ const HeroSection = () => {
         marginBottom: '3rem',
         lineHeight: 1.6 
       }}>
-        PyBe teaches computational thinking through realistic missions. Solve problems in plain English with Pycrates, your AI Socratic tutor, before you write a single line of code.
+        PyBe teaches computational thinking through realistic case studies. Solve problems in plain English with Pycrates, your AI Socratic tutor, before you write a single line of code.
       </p>
       <button 
         className="btn-primary" 
         style={{ fontSize: '1.2rem', padding: '1rem 2rem' }}
         onClick={() => navigate('/levels')}
       >
-        Onto the missions!
+        Onto the case studies!
       </button>
     </section>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 import { Check } from 'lucide-react';
 
 const stages = [
-  'Mission Brief',
+  'Case Study Brief',
   'Reasoning Phase',
   'Python Translation',
   'Coding Phase',

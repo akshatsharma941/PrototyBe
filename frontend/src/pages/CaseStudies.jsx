@@ -4,33 +4,33 @@ import { Clock, Brain, CheckCircle, Circle, ArrowLeft } from 'lucide-react';
 import { mockLevels } from '../data/mockData';
 import { useProgress } from '../context/ProgressContext';
 
-const Missions = () => {
+const CaseStudies = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { completedMissions } = useProgress();
+  const { completedCaseStudies } = useProgress();
   
   const [backendCaseStudies, setBackendCaseStudies] = useState([]);
 
   useEffect(() => {
     if (id === 'lvl-1' || id === 'lvl-2') {
-      fetch('http://localhost:5001/api/case-studies')
+      fetch('http://localhost:5000/api/case-studies')
         .then(res => res.json())
         .then(data => setBackendCaseStudies(data))
-        .catch(console.error);
+        .catch(err => console.error("Failed to fetch case studies:", err));
     }
   }, [id]);
 
   const levelData = mockLevels.find(l => l.id === id);
-  let missions = levelData ? levelData.missions : [];
+  let caseStudies = levelData ? levelData.caseStudies : [];
   
-  if (id === 'lvl-1' || id === 'lvl-2') {
+  if ((id === 'lvl-1' || id === 'lvl-2') && backendCaseStudies.length > 0) {
     const filteredCaseStudies = backendCaseStudies.filter(cs => {
       const isTrain = cs.title.toLowerCase().includes('train') || cs.title.toLowerCase().includes('rajdhani');
       return id === 'lvl-2' ? isTrain : !isTrain;
     });
     
-    missions = filteredCaseStudies.map(cs => ({
-      id: cs.id,
+    caseStudies = filteredCaseStudies.map(cs => ({
+      id: cs._id || cs.id,
       title: cs.title,
       description: cs.description,
       difficulty: cs.difficulty || 'Medium',
@@ -39,7 +39,7 @@ const Missions = () => {
     }));
   }
 
-  const topicTitle = levelData ? `Level ${levelData.levelNumber}: ${levelData.title}` : 'Missions';
+  const topicTitle = levelData ? `Level ${levelData.levelNumber}: ${levelData.title}` : 'Case Studies';
 
   return (
     <div className="doodle-bg" style={{ 
@@ -66,7 +66,7 @@ const Missions = () => {
             color: 'var(--text-primary)',
             fontWeight: 700
           }}>
-            {topicTitle} Missions
+            {topicTitle} Case Studies
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
             Select a scenario to practice your reasoning skills.
@@ -74,9 +74,9 @@ const Missions = () => {
         </header>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
-          {missions.map(mission => (
+          {caseStudies.map(caseStudy => (
             <div 
-              key={mission.id}
+              key={caseStudy.id}
               className="glass-panel"
               style={{ 
                 padding: '2rem',
@@ -85,7 +85,7 @@ const Missions = () => {
                 cursor: 'pointer',
                 transition: 'transform 0.2s, box-shadow 0.2s'
               }}
-              onClick={() => navigate(mission.isCaseStudy ? `/case-study/${mission.id}` : `/workspace/${mission.id}`)}
+              onClick={() => navigate(caseStudy.isCaseStudy ? `/case-study/${caseStudy.id}` : `/workspace/${caseStudy.id}`)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
                 e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
@@ -96,8 +96,8 @@ const Missions = () => {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', lineHeight: 1.3 }}>{mission.title}</h3>
-                {completedMissions.includes(mission.id) ? (
+                <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', lineHeight: 1.3 }}>{caseStudy.title}</h3>
+                {completedCaseStudies.includes(caseStudy.id) ? (
                   <CheckCircle size={24} color="var(--success)" style={{ flexShrink: 0 }} />
                 ) : (
                   <Circle size={24} color="var(--text-secondary)" style={{ flexShrink: 0 }} />
@@ -105,7 +105,7 @@ const Missions = () => {
               </div>
               
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6, flex: 1, marginBottom: '1.5rem' }}>
-                {mission.description}
+                {caseStudy.description}
               </p>
 
               <div style={{ 
@@ -119,10 +119,10 @@ const Missions = () => {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   <Brain size={16} color="var(--accent-primary)" />
-                  <span>{mission.difficulty}</span>
+                  <span>{caseStudy.difficulty}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span>{mission.xpReward} XP</span>
+                  <span>{caseStudy.xpReward} XP</span>
                 </div>
               </div>
             </div>
@@ -133,4 +133,4 @@ const Missions = () => {
   );
 };
 
-export default Missions;
+export default CaseStudies;

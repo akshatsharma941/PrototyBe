@@ -7,18 +7,18 @@ import RightPanel from '../components/workspace/RightPanel';
 
 import { mockLevels } from '../data/mockData';
 
-const MissionExperience = () => {
+const Workspace = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // Find the level and mission from mock data
-  const level = mockLevels.find(l => l.missions.some(m => m.id === id));
-  const missionData = level?.missions.find(m => m.id === id);
+  // Find the level and case study from mock data
+  const level = mockLevels.find(l => l.caseStudies.some(m => m.id === id));
+  const caseStudyData = level?.caseStudies.find(m => m.id === id);
   
-  const mission = {
+  const caseStudy = {
     id: id,
-    title: missionData?.title || 'Unknown Mission',
-    story: missionData?.description || 'Mission details not found.'
+    title: caseStudyData?.title || 'Unknown Case Study',
+    story: caseStudyData?.description || 'Case study details not found.'
   };
 
   const [leftWidth, setLeftWidth] = useState(() => {
@@ -29,11 +29,11 @@ const MissionExperience = () => {
   });
   
   const [pycratesStatus, setPycratesStatus] = useState('Guiding Reasoning');
-  const [currentStage, setCurrentStage] = useState('Mission Brief');
+  const [currentStage, setCurrentStage] = useState('Case Study Brief');
 
   useEffect(() => {
     setPycratesStatus('Guiding Reasoning');
-    setCurrentStage('Mission Brief');
+    setCurrentStage('Case Study Brief');
   }, [id]);
 
   const containerRef = useRef(null);
@@ -74,7 +74,7 @@ const MissionExperience = () => {
       <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--glass-border)' }}>
         <div style={{ paddingLeft: '1rem', borderRight: '1px solid var(--glass-border)', paddingRight: '1.5rem', display: 'flex', alignItems: 'center' }}>
           <button 
-            onClick={() => navigate(`/level/${level?.id}/missions`)}
+            onClick={() => navigate(`/level/${level?.id}/case-studies`)}
             className="btn-back"
           >
             <ArrowLeft size={16} /> Back
@@ -91,7 +91,7 @@ const MissionExperience = () => {
         {/* Left Panel */}
         <div style={{ width: `${leftWidth}px`, flexShrink: 0 }}>
           <LeftPanel 
-            mission={mission} 
+            caseStudy={caseStudy} 
             pycratesStatus={pycratesStatus} 
             setPycratesStatus={setPycratesStatus}
             currentStage={currentStage}
@@ -140,4 +140,4 @@ const MissionExperience = () => {
   );
 };
 
-export default MissionExperience;
+export default Workspace;

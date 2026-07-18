@@ -20,7 +20,7 @@ const ComparisonSection = () => {
         <div className="glass-panel" style={{ padding: '2.5rem', borderLeft: '4px solid var(--success)' }}>
           <h3 style={{ color: 'var(--success)', marginBottom: '1rem', fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '1px' }}>The PyBe Method</h3>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', color: 'var(--text-primary)', fontWeight: 500 }}>
-            <span>Solve a Mission</span>
+            <span>Solve a Case Study</span>
             <span style={{ color: 'var(--text-secondary)' }}>&rarr;</span>
             <span>Explain Reasoning</span>
             <span style={{ color: 'var(--text-secondary)' }}>&rarr;</span>

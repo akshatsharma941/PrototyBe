@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Bot } from 'lucide-react';
+import { Bot, ArrowLeft } from 'lucide-react';
 
 const CaseStudy = () => {
   const { id } = useParams();
@@ -10,7 +10,7 @@ const CaseStudy = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5001/api/case-studies/${id}`)
+    fetch(`http://localhost:5000/api/case-studies/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Case study not found');
         return res.json();
@@ -32,6 +32,11 @@ const CaseStudy = () => {
 
   return (
     <div className="container doodle-bg" style={{ padding: '3rem', maxWidth: '800px', margin: '0 auto', overflowY: 'auto', height: '100%' }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <button onClick={() => navigate(-1)} className="btn-back">
+          <ArrowLeft size={16} /> Back
+        </button>
+      </div>
       <div className="glass-panel" style={{ padding: '3rem' }}>
         <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--accent-primary)' }}>{caseStudy.title}</h2>
         
