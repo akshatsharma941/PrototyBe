@@ -87,7 +87,7 @@ export const ProgressProvider = ({ children }) => {
     const saved = loadFromStorage();
     if (saved) {
       return {
-        completedMissions: saved.completedMissions || [],
+        completedCaseStudies: saved.completedCaseStudies || [],
         xp: saved.xp || 0,
         discoveredConcepts: saved.discoveredConcepts || [],
         streakDates: saved.streakDates || [],
@@ -96,7 +96,7 @@ export const ProgressProvider = ({ children }) => {
     // First-time visitor: no initial streak
     const initialDates = generateInitialStreakDates(0);
     return {
-      completedMissions: [],
+      completedCaseStudies: [],
       xp: 0,
       discoveredConcepts: [],
       streakDates: initialDates,
@@ -121,12 +121,12 @@ export const ProgressProvider = ({ children }) => {
     });
   }, []);
 
-  // ─── Complete a mission ──────────────────────────────────────
-  const completeMission = useCallback((missionId, xpReward, concepts = []) => {
+  // ─── Complete a case study ──────────────────────────────────────
+  const completeCaseStudy = useCallback((caseStudyId, xpReward, concepts = []) => {
     setState(prev => {
-      if (prev.completedMissions.includes(missionId)) return prev;
+      if (prev.completedCaseStudies.includes(caseStudyId)) return prev;
 
-      const newCompleted = [...prev.completedMissions, missionId];
+      const newCompleted = [...prev.completedCaseStudies, caseStudyId];
       const newXp = prev.xp + xpReward;
       const newConcepts = [
         ...prev.discoveredConcepts,
@@ -140,7 +140,7 @@ export const ProgressProvider = ({ children }) => {
         : [today, ...prev.streakDates];
 
       return {
-        completedMissions: newCompleted,
+        completedCaseStudies: newCompleted,
         xp: newXp,
         discoveredConcepts: newConcepts,
         streakDates: newStreakDates,
@@ -158,28 +158,28 @@ export const ProgressProvider = ({ children }) => {
     if (levelNum > 1) {
       const prevLevel = mockLevels.find(l => l.levelNumber === levelNum - 1);
       if (prevLevel) {
-        const prevMissionsCompleted = prevLevel.missions.every(
-          m => state.completedMissions.includes(m.id)
+        const prevCaseStudiesCompleted = prevLevel.caseStudies.every(
+          m => state.completedCaseStudies.includes(m.id)
         );
-        isUnlocked = prevMissionsCompleted;
+        isUnlocked = prevCaseStudiesCompleted;
       }
     }
 
-    const totalMissions = level.missions.length;
-    const completedCount = level.missions.filter(
-      m => state.completedMissions.includes(m.id)
+    const totalCaseStudies = level.caseStudies.length;
+    const completedCount = level.caseStudies.filter(
+      m => state.completedCaseStudies.includes(m.id)
     ).length;
-    const percent = totalMissions === 0 ? 0 : Math.round((completedCount / totalMissions) * 100);
+    const percent = totalCaseStudies === 0 ? 0 : Math.round((completedCount / totalCaseStudies) * 100);
 
     return { percent, isUnlocked };
-  }, [state.completedMissions]);
+  }, [state.completedCaseStudies]);
 
   return (
     <ProgressContext.Provider value={{
-      completedMissions: state.completedMissions,
+      completedCaseStudies: state.completedCaseStudies,
       xp: state.xp,
       discoveredConcepts: state.discoveredConcepts,
-      completeMission,
+      completeCaseStudy,
       getLevelProgress,
       streak,
       streakDates: state.streakDates,

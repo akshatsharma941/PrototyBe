@@ -128,7 +128,7 @@ const NodeTooltip = ({ level, percent, isUnlocked, isCompleted, onStart }) => (
     <div className="path-tooltip-desc">{level.description}</div>
     <div className="path-tooltip-meta">
       <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-        <Flag size={12} color="var(--accent-secondary)" /> {level.missions.length} Case Studies
+        <Flag size={12} color="var(--accent-secondary)" /> {level.caseStudies.length} Case Studies
       </span>
       <span>{percent}% Complete</span>
     </div>

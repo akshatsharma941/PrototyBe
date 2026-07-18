@@ -2,12 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, ArrowRight, Zap, Target, Lightbulb } from 'lucide-react';
 
-const MissionAccomplishedModal = ({ missionData, nextMissionId, onClose }) => {
+const CaseStudyAccomplishedModal = ({ caseStudyData, nextCaseStudyId, onClose }) => {
   const navigate = useNavigate();
 
   const handleNext = () => {
-    if (nextMissionId) {
-      navigate(`/workspace/${nextMissionId}`);
+    if (nextCaseStudyId) {
+      navigate(`/workspace/${nextCaseStudyId}`);
     } else {
       navigate('/levels');
     }
@@ -75,7 +75,7 @@ const MissionAccomplishedModal = ({ missionData, nextMissionId, onClose }) => {
             WebkitTextFillColor: 'transparent',
             fontWeight: 800
           }}>
-            Mission Accomplished!
+            Case Study Accomplished!
           </h2>
           
           <div style={{ 
@@ -89,7 +89,7 @@ const MissionAccomplishedModal = ({ missionData, nextMissionId, onClose }) => {
             border: '1px solid rgba(245, 158, 11, 0.2)'
           }}>
             <Zap size={18} color="#f59e0b" />
-            <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '1.1rem' }}>+{missionData?.xpReward} XP Gained</span>
+            <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '1.1rem' }}>+{caseStudyData?.xpReward} XP Gained</span>
           </div>
 
           <div style={{ 
@@ -107,7 +107,7 @@ const MissionAccomplishedModal = ({ missionData, nextMissionId, onClose }) => {
                 <Target size={16} /> Lesson Summary
               </div>
               <p style={{ color: 'var(--text-primary)', lineHeight: 1.5 }}>
-                {missionData?.lessonSummary}
+                {caseStudyData?.lessonSummary}
               </p>
             </div>
             
@@ -118,7 +118,7 @@ const MissionAccomplishedModal = ({ missionData, nextMissionId, onClose }) => {
                 <Lightbulb size={16} color="var(--accent-secondary)" /> Intuition Built
               </div>
               <p style={{ color: 'var(--text-primary)', lineHeight: 1.5 }}>
-                {missionData?.intuitionBuilt}
+                {caseStudyData?.intuitionBuilt}
               </p>
             </div>
           </div>
@@ -168,4 +168,4 @@ const MissionAccomplishedModal = ({ missionData, nextMissionId, onClose }) => {
   );
 };
 
-export default MissionAccomplishedModal;
+export default CaseStudyAccomplishedModal;

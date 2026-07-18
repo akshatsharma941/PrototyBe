@@ -4,12 +4,12 @@ import { Play, UploadCloud, ChevronUp, ChevronDown, CheckCircle, XCircle } from 
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProgress } from '../../context/ProgressContext';
 import { mockLevels } from '../../data/mockData';
-import MissionAccomplishedModal from './MissionAccomplishedModal';
+import CaseStudyAccomplishedModal from './CaseStudyAccomplishedModal';
 
 const RightPanel = ({ pycratesStatus }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { completeMission } = useProgress();
+  const { completeCaseStudy } = useProgress();
   const [code, setCode] = useState('# Write your Python code here\n');
   const [testAreaHeight, setTestAreaHeight] = useState(250);
   const [isTestAreaOpen, setIsTestAreaOpen] = useState(true);
@@ -18,18 +18,18 @@ const RightPanel = ({ pycratesStatus }) => {
   const [isExecuting, setIsExecuting] = useState(false);
   const isReady = pycratesStatus === 'Ready for Coding' || pycratesStatus === 'Complete';
 
-  // Calculate next mission ID
-  let nextMissionId = null;
-  let currentMissionData = null;
+  // Calculate next case study ID
+  let nextCaseStudyId = null;
+  let currentCaseStudyData = null;
   for (let lIdx = 0; lIdx < mockLevels.length; lIdx++) {
     const level = mockLevels[lIdx];
-    const mIdx = level.missions.findIndex(m => m.id === id);
+    const mIdx = level.caseStudies.findIndex(m => m.id === id);
     if (mIdx !== -1) {
-      currentMissionData = level.missions[mIdx];
-      if (mIdx < level.missions.length - 1) {
-        nextMissionId = level.missions[mIdx + 1].id;
+      currentCaseStudyData = level.caseStudies[mIdx];
+      if (mIdx < level.caseStudies.length - 1) {
+        nextCaseStudyId = level.caseStudies[mIdx + 1].id;
       } else if (lIdx < mockLevels.length - 1) {
-        nextMissionId = mockLevels[lIdx + 1].missions[0].id;
+        nextCaseStudyId = mockLevels[lIdx + 1].caseStudies[0].id;
       }
       break;
     }
@@ -62,12 +62,12 @@ const RightPanel = ({ pycratesStatus }) => {
   const handleRun = async () => {
     setIsExecuting(true);
     try {
-      const missionData = mockLevels.flatMap(l => l.missions).find(m => m.id === id);
+      const caseStudyData = mockLevels.flatMap(l => l.caseStudies).find(m => m.id === id);
       const defaultTcs = [
         { input: '', expectedOutput: '0' },
         { input: '', expectedOutput: '1' }
       ];
-      const tcs = missionData?.testCases || defaultTcs;
+      const tcs = caseStudyData?.testCases || defaultTcs;
 
       const results = [];
       for (let i = 0; i < tcs.length; i++) {
@@ -132,8 +132,8 @@ const RightPanel = ({ pycratesStatus }) => {
     // Check if tests passed before submitting
     const allPassed = testResults?.every(r => r.passed);
     if (allPassed && testResults?.length > 0) {
-      if (currentMissionData) {
-        completeMission(id, currentMissionData.xpReward, currentMissionData.possibleConcepts);
+      if (currentCaseStudyData) {
+        completeCaseStudy(id, currentCaseStudyData.xpReward, currentCaseStudyData.possibleConcepts);
       }
       setShowCompletionModal(true);
     } else {
@@ -272,9 +272,9 @@ const RightPanel = ({ pycratesStatus }) => {
 
       {/* Completion Modal */}
       {showCompletionModal && (
-        <MissionAccomplishedModal 
-          missionData={currentMissionData} 
-          nextMissionId={nextMissionId} 
+        <CaseStudyAccomplishedModal 
+          caseStudyData={currentCaseStudyData} 
+          nextCaseStudyId={nextCaseStudyId} 
           onClose={() => setShowCompletionModal(false)} 
         />
       )}

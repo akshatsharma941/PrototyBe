@@ -4,7 +4,7 @@ export const mockLevels = [
     title: "The Basics of Tracking",
     description: "Begin your journey. Learn to keep track of information in the real world and discover the fundamentals of memory.",
     levelNumber: 1,
-    missions: [
+    caseStudies: [
       {
         id: "mis-1-1",
         title: "The Coffee Shop Tracker",
@@ -44,7 +44,7 @@ export const mockLevels = [
     title: "Branching Paths",
     description: "Face scenarios that require making choices. Master the art of decision making based on specific rules.",
     levelNumber: 2,
-    missions: [
+    caseStudies: [
       {
         id: "mis-2-1",
         title: "The Night Club Bouncer",
@@ -80,7 +80,7 @@ export const mockLevels = [
     title: "The Factory Floor",
     description: "Repetitive tasks are boring and error-prone. Learn how to automate actions efficiently without repeating yourself.",
     levelNumber: 3,
-    missions: [
+    caseStudies: [
       {
         id: "mis-3-1",
         title: "The Payroll Processor",

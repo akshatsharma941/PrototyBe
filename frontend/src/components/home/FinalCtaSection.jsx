@@ -16,7 +16,7 @@ const FinalCtaSection = () => {
         }}
         onClick={() => navigate('/levels')}
       >
-        Onto the missions!
+        Onto the case studies!
       </button>
     </section>
   );

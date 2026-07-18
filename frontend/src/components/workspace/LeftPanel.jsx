@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Book, ChevronDown, ChevronUp, CheckCircle, Bot } from 'lucide-react';
 import MessageSpeaker from './MessageSpeaker';
 
-const LeftPanel = ({ mission, pycratesStatus, setPycratesStatus, currentStage, setCurrentStage }) => {
+const LeftPanel = ({ caseStudy, pycratesStatus, setPycratesStatus, currentStage, setCurrentStage }) => {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hello! I'm Pycrates. Let's tackle this mission together. How would you approach tracking the coffee cups sold in plain English?" }
+    { role: 'assistant', content: "Hello! I'm Pycrates. Let's tackle this case study together. How would you approach tracking the coffee cups sold in plain English?" }
   ]);
   const [input, setInput] = useState('');
   const [isRefOpen, setIsRefOpen] = useState(false);
@@ -59,11 +59,11 @@ const LeftPanel = ({ mission, pycratesStatus, setPycratesStatus, currentStage, s
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-primary)' }}>
-      {/* Mission Context */}
-      <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--glass-border)', flexShrink: 0 }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>{mission?.title || 'Mission Title'}</h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '1rem' }}>
-          {mission?.story || 'Mission description goes here.'}
+      {/* Case Study Context */}
+      <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--glass-border)', background: 'var(--bg-secondary)' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>{caseStudy?.title || 'Case Study Title'}</h2>
+        <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '0.95rem' }}>
+          {caseStudy?.story || 'Case study description goes here.'}
         </p>
         <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '0.75rem', borderRadius: '6px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
           <span style={{ color: 'var(--accent-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>Objective:</span>
