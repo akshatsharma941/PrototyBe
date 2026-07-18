@@ -13,24 +13,24 @@ const Missions = () => {
 
   useEffect(() => {
     if (id === 'lvl-1' || id === 'lvl-2') {
-      fetch('http://localhost:5001/api/case-studies')
+      fetch('http://localhost:5000/api/case-studies')
         .then(res => res.json())
         .then(data => setBackendCaseStudies(data))
-        .catch(console.error);
+        .catch(err => console.error("Failed to fetch case studies:", err));
     }
   }, [id]);
 
   const levelData = mockLevels.find(l => l.id === id);
   let missions = levelData ? levelData.missions : [];
   
-  if (id === 'lvl-1' || id === 'lvl-2') {
+  if ((id === 'lvl-1' || id === 'lvl-2') && backendCaseStudies.length > 0) {
     const filteredCaseStudies = backendCaseStudies.filter(cs => {
       const isTrain = cs.title.toLowerCase().includes('train') || cs.title.toLowerCase().includes('rajdhani');
       return id === 'lvl-2' ? isTrain : !isTrain;
     });
     
     missions = filteredCaseStudies.map(cs => ({
-      id: cs.id,
+      id: cs._id || cs.id,
       title: cs.title,
       description: cs.description,
       difficulty: cs.difficulty || 'Medium',
