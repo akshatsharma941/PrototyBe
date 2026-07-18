@@ -10,7 +10,7 @@ const CaseStudy = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5001/api/case-studies/${id}`)
+    fetch(`http://localhost:5000/api/case-studies/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Case study not found');
         return res.json();

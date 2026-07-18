@@ -96,7 +96,7 @@ const Tutor = () => {
   }, [messages, isTyping, status]);
 
   useEffect(() => {
-    fetch(`http://localhost:5001/api/case-studies/${id}`)
+    fetch(`http://localhost:5000/api/case-studies/${id}`)
       .then(res => {
          if (!res.ok) throw new Error('Case study not found');
          return res.json();
@@ -116,7 +116,7 @@ const Tutor = () => {
   const bootstrapFirstTurn = async (cs) => {
     try {
       setIsTyping(true);
-      const res = await fetch('http://localhost:5001/api/tutor/explanation', {
+      const res = await fetch('http://localhost:5000/api/tutor/explanation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -153,7 +153,7 @@ const Tutor = () => {
     setIsTyping(true);
 
     try {
-      const res = await fetch('http://localhost:5001/api/tutor/explanation', {
+      const res = await fetch('http://localhost:5000/api/tutor/explanation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -227,7 +227,7 @@ const Tutor = () => {
     setOutput('Running code...');
     
     try {
-      const res = await fetch('http://localhost:5001/api/execute', {
+      const res = await fetch('http://localhost:5000/api/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
